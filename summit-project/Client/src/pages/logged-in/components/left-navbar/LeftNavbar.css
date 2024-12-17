@@ -1,0 +1,7 @@
+.leftNavbarCotainer {
+    display: flex;
+    flex-direction: column;
+    width: 200px; /* Fixed width */
+    background-color: #364147;
+    height: 100% /* Stretch to fill parent container */;
+}
