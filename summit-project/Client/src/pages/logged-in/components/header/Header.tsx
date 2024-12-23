@@ -1,16 +1,19 @@
 import { memo, ReactNode } from "react";
-import { useUserContext } from "../../../../contexts/User-Context";
+import { useUser } from "../../../../contexts/User-Context";
+import logo from '../../../../assets/logo.png';
+import defaultuserimage from '../../../../assets/defaultuserimage.png';
 import './Header.css';
 
 function Header(): ReactNode{
-    const { userData } = useUserContext();
+    const { user } = useUser ();
     return(
         <div className='headerContainer'>
+            <img width='40px' height='30px' src={logo} />
+            <div className='title'>Sammit Tasks Management</div>
             <div className='userData'>
-                {`${userData.firstName} ${userData.lastName} `}
-                <img src="https://e7.pngegg.com/pngimages/753/432/png-clipart-user-profile-2018-in-sight-user-conference-expo-business-default-business-angle-service-thumbnail.png" />
+                {user && `${user.firstName} ${user.lastName} `}
+                <img src={defaultuserimage} />
             </div>
-            
         </div>
     );
 }

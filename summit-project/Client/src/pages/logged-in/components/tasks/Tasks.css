@@ -1,0 +1,171 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.tasks-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    width: 100%;
+    height: 100%;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.tasks-container .create-task {
+    display: flex;
+    align-items: center;
+    align-self: flex-start;
+    border-bottom: 2px solid black;
+    width: 100%;
+}
+
+.tasks-container .create-task h1 {
+    width: 300px;
+}
+
+.tasks-container .create-task h1:hover {
+    cursor: pointer;
+    color: blue;
+}
+
+.tasks-container .create-task img {
+    width: 35px;
+    height: 35px;
+    margin-right: 10px;
+}
+
+.tasks-container .new-task-background {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+}
+
+.tasks-container .new-task-background .new-task-div {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 670px; 
+    height: 430px;
+    background-color: #eceff4;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    border-radius: 10px; 
+}
+
+.tasks-container .new-task-background .new-task-div .close-window-container {
+    display: flex;
+    justify-content: space-between;
+    background-color: #3c8cbd;
+}
+
+.tasks-container .new-task-background .new-task-div .close-window-container .close-window,
+.tasks-container .new-task-background .new-task-div .close-window-container .close-window-title {
+    padding: 10px; 
+    background-color: #3c8cbd;
+    font-weight: bolder;
+    box-shadow: 0 4px 8px rgba(0, 140, 189, 0.3);
+}
+
+.tasks-container .new-task-background .new-task-div .close-window-container .close-window:hover {
+    cursor: pointer;
+}
+
+.tasks-container .new-task-background .new-task-div .create-task-content {
+    display: flex;
+    flex-direction: column; 
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.tasks-container .tasks-table-container {
+    margin: 20px 0;
+    padding: 20px 0;
+    background-color: white;
+    width: 100%; /* Ensure it spans the full container width */
+    height: auto;
+    box-sizing: border-box;
+    flex-shrink: 0; /* Prevent shrinking when resizing */
+}
+
+.tasks-container .tasks-table-container h2{
+    margin-left:15px;
+    text-decoration: underline;
+}
+
+.tasks-container .tasks-table-container .tasks-table {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+    margin: 10px;
+    position: relative;
+}
+
+.tasks-container .tasks-table-container .tasks-table .tasks-header {
+    font-weight: bold;
+    background-color: #3C8CBD;
+}
+
+.tasks-container .tasks-table-container .tasks-table .tasks-header,
+.tasks-container .tasks-table-container .tasks-table .task-row {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+}
+
+.tasks-container .tasks-table-container .tasks-table .task-row {
+    background-color: #fff;
+}
+
+.tasks-container .tasks-table-container .tasks-table .task-row:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.tasks-container .tasks-table-container .tasks-table .tasks-header span,
+.tasks-container .tasks-table-container .tasks-table .task-row span {
+    flex: 1; /* Equal space distribution for columns */
+    padding: 8px;
+}
+
+.tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(1),
+.tasks-container .tasks-table-container .tasks-table .task-row span:nth-child(1) {
+    flex: 0 0 120px; /* Fixed width for column 1 */
+}
+
+.tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(2),
+.tasks-container .tasks-table-container .tasks-table .task-row span:nth-child(2) {
+    flex: 0 0 250px; /* Fixed width for column 2 */
+}
+
+.tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(3),
+.tasks-container .tasks-table-container .tasks-table .task-row span:nth-child(3) {
+    flex: 0 0 500px; /* Fixed width for column 3 */
+}
+
+.tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(4),
+.tasks-container .tasks-table-container .tasks-table .task-row span:nth-child(4) {
+    flex: 0 0 100px; /* Fixed width for column 4 */
+}
+
+.tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(5),
+.tasks-container .tasks-table-container .tasks-table .task-row span:nth-child(5) {
+    flex: 0 0 600px; /* Fixed width for column 5 */
+}
+
+.tasks-container .tasks-table-container .tasks-table .tasks-header span {
+    border-bottom: 2px solid #ccc;
+}

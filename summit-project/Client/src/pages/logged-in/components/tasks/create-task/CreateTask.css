@@ -1,0 +1,72 @@
+.create-task-container {
+    display: flex;
+    position: fixed;
+    flex-direction: column;
+    justify-content: center;
+    height: 360px;
+    box-sizing: border-box;
+}
+
+.create-task-container .task-form-row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    
+}
+.create-task-container .task-form-row .title-input{
+    height: 35px;
+    width: 500px;
+    font-size: larger;
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.create-task-container .task-form-row .title-input:focus{
+    border: 2px solid black;
+}
+.create-task-container .task-form-row h3{
+    margin: 7px;
+}
+.create-task-container .task-form-row .description-text{
+    margin-left: 3px;
+    min-width: 500px;
+    min-height: 100px;
+    resize: none;
+    padding: 5px;
+    font-size: large;
+    border: 1px solid black;
+    border-radius: 8px;
+}
+
+.create-task-container .task-form-row .task-priority{
+    height: 35px;
+    width: 170px;
+    border-radius: 7px;
+    padding: 5px;
+}
+.create-task-container .task-form-row .task-priority:hover{
+    cursor: pointer;
+}
+
+.create-task-container .controls{
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: auto;
+    font-size: larger;
+    font-weight: bold;
+}
+.create-task-container .controls .controlBtn{
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    width: 100px;
+    text-align: center;
+}
+.create-task-container .controls .controlBtn:hover{
+    cursor: pointer;
+    border: 3px solid black;
+    font-weight: 800;
+}

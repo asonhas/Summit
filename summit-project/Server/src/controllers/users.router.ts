@@ -7,24 +7,22 @@ const usersRouter = express.Router();
 
 usersRouter.post('/login',async (req,res) => {
     const { user, pass } = req.body;
-    console.log(user,pass);
     if( user != undefined && pass != undefined){
         const data = await UserModel.findOne({ username: user, password: pass });
+        console.log('user Id:', data?.userID);
         if(data){
             const sid =  uuidv4();
-            //res.cookie('sid', sid, { maxAge: 60 * 60 * 1000, httpOnly: true });
-            res.cookie('sid', sid, { maxAge: 60 * 1000, httpOnly: true });
+            res.cookie('sid', sid, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
             res.json({ 
                 email: data.email,
-                userName: data.username,
-                fName: data.firstName,
-                lName: data.lastName,
+                username: data.username,
+                firstName: data.firstName,
+                lastName: data.lastName,
              });
             const newSession = new SessionModel({
                 sessionId: sid,
-                userId: data.userId,
-               // expiresAt: Date.now() + 60 * 60 * 1000,
-               expiresAt: Date.now() +  60 * 1000,
+                userId: data.userID as string,
+                expiresAt: Date.now() +   24 * 60 * 60 * 1000,
             });
             await newSession.save();
             return;

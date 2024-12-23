@@ -3,7 +3,16 @@
     flex-direction: column; /* Stack children vertically */
     height: 100vh; /* Full viewport height */
 }
-.contentWrapper {
+.mainContentContainer .contentWrapper {
     display: flex;
     flex: 1; /* Take up remaining height */
+}
+.mainContentContainer .contentWrapper .componentSwitcher{
+    background-color: #eceff4; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    width: 100%;
+    height: 100%;
 }

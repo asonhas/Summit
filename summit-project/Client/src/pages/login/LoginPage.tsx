@@ -1,44 +1,52 @@
 import { memo, ReactNode, useCallback } from 'react';
 import logo from '../../assets/logo.png';
 import backgroundImage from '../../assets/background.jpg'
-import { axiosClient } from '../../axiosClient';
+import { axiosLogin } from '../../axios';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
-import { useUserContext } from '../../contexts/User-Context';
+import { useUser } from '../../contexts/User-Context';
 
+
+type userData ={
+    email: string,
+    firstName: string,
+    lastName: string,
+    username: string
+};
+//sessionStorage.setItem('isLoggedIn', 'false');
 function Login(): ReactNode {
     const navigate = useNavigate()
-    const { dispatch: dispatchUserData } = useUserContext();
+    const { setUser } = useUser();
     const handleLogin = useCallback(async ()=>{
         try {
             const userinput = document.getElementById('uid') as HTMLInputElement;
             const pwdInput = document.getElementById('pwd') as HTMLInputElement;
-            const response = await axiosClient.post('/api/users/login', {
+            const response = await axiosLogin.post('/api/users/login', {
                 'user': userinput.value,
                 'pass': pwdInput.value
-            },{
-                withCredentials: true,
             });
             if(response && response.status == 200){
-                const { email, fName, lName, userName } = response.data; 
-                if(dispatchUserData){
-                    dispatchUserData({
-                        isLoggedIn: true,
-                        email: email as string,
-                        firstName: fName as string,
-                        lastName: lName as string,
-                        username: userName as string,
-                    });
-                }
-                navigate('/main');
+                const { email, firstName, lastName, username }: userData = response.data; 
+                // save user data in session storage
+                sessionStorage.setItem('userData', JSON.stringify({ email, firstName, lastName, username }));
+                // update isLoggedIn
+                sessionStorage.setItem('isLoggedIn', 'true');
+                setUser({
+                    email,
+                    firstName,
+                    lastName,
+                    username,
+                    isLoggedIn: true
+                });
+                navigate('/');
             }
-            userinput.value = '';
-            pwdInput.value = '';
         } catch (err: unknown) {
+            (document.getElementById('uid') as HTMLInputElement).value = '';
+            (document.getElementById('pwd') as HTMLInputElement).value = '';
             alert(`Error occurred: ${(err as AxiosError).response?.data}`);
         }
-    },[dispatchUserData, navigate]);
+    },[navigate, setUser]);
 
     return (
         <div className='backGround' >

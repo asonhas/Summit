@@ -1,56 +1,43 @@
-import { createContext, ReactNode, useMemo, useState, useContext } from "react";
+import { createContext, useState, useContext, ReactNode } from "react";
 
-type User = {
-    isLoggedIn: boolean;
-    email: string;
-    firstName: string;
-    lastName: string;
-    username: string;
+export type UserData = {
+  isLoggedIn: boolean
+  email: string;
+  firstName: string;
+  lastName: string;
+  username: string;
 };
 
 type UserContextType = {
-    userData: User,
-    dispatch?: (user: User) => void;
-}
+  user: UserData | null;
+  setUser: (user: UserData | null) => void;
+};
 
-export const initalizeUserData = () => {
-  return {
-    isLoggedIn: false,
-    email: '',
-    firstName: '',
-    lastName: '',
-    username: '',
+export const UserContext = createContext<UserContextType | undefined>(undefined);
+
+export const UserProvider = ({ children }: { children: ReactNode }) => {
+  
+  const _userData = sessionStorage.getItem('userData');
+  const _isLoggedIn = sessionStorage.getItem('isLoggedIn');
+  let userData: UserData | null = null;
+  if(_userData && _isLoggedIn){
+    userData = JSON.parse(_userData);
+    if(userData){
+      userData.isLoggedIn = _isLoggedIn === 'true';
+    }
   }
-}
+  const [user, setUser] = useState<UserData | null>(userData);
+  return (
+    <UserContext.Provider value={{ user, setUser }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
-
-function UserProvider ({ children }: { children: ReactNode }) {
-    const [userData, setUserData] = useState<User>(initalizeUserData());
-
-    const contextData: UserContextType = useMemo(() => ({
-        userData,
-        dispatch: setUserData,
-    }), [userData]);
-
-    return (
-        <UserContext.Provider value={contextData}>
-          {children}
-        </UserContext.Provider>
-      );
-}
-
-export default UserProvider;
-
-
-export const useUserContext = (): UserContextType => {
+export const useUser = () => {
   const context = useContext(UserContext);
-  if (context === undefined) {
-    // if there is no value the hook is not being called within a function component that is rendered within a `ThemeContext`
-    throw new Error('useUserContext must be used within App');
+  if (!context) {
+    throw new Error("useUser must be used within a UserProvider");
   }
   return context;
 };
-
-
-

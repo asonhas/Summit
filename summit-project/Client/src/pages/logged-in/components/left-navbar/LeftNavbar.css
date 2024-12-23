@@ -2,6 +2,15 @@
     display: flex;
     flex-direction: column;
     width: 200px; /* Fixed width */
-    background-color: #364147;
+    background-color: #222d31;
     height: 100% /* Stretch to fill parent container */;
+}
+
+.leftNavbarCotainer .option{
+    padding: 15px 10px;
+    color: white;
+}
+.leftNavbarCotainer .option:hover{
+    background-color: #314248;
+    cursor: pointer;
 }

@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import usersRouter from './controllers/users.router';
+import tasksRouter from "./controllers/tasks.router";
 
 
 dotenv.config();
@@ -25,7 +26,8 @@ app.use(cookieParser());
 
 
 app.use('/api/users', usersRouter);
+app.use('/api/tasks', tasksRouter);
 
 app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
-  });
+});
