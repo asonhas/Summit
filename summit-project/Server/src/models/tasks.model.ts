@@ -7,7 +7,7 @@ const tasksSchema = new Schema({
     assignedTo: { type: String },
     duedate: { type: String },
     priority: {type: String},
-    userID: {type: String},
+    userName: {type: String},
   });
   
   export const TasksModel = model('tasks', tasksSchema);

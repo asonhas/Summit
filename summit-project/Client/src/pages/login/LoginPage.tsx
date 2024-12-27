@@ -4,17 +4,10 @@ import backgroundImage from '../../assets/background.jpg'
 import { axiosLogin } from '../../axios';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './LoginPage.css';
 import { useUser } from '../../contexts/User-Context';
+import { userData } from '../../types/Types';
+import './LoginPage.css';
 
-
-type userData ={
-    email: string,
-    firstName: string,
-    lastName: string,
-    username: string
-};
-//sessionStorage.setItem('isLoggedIn', 'false');
 function Login(): ReactNode {
     const navigate = useNavigate()
     const { setUser } = useUser();
@@ -27,17 +20,18 @@ function Login(): ReactNode {
                 'pass': pwdInput.value
             });
             if(response && response.status == 200){
-                const { email, firstName, lastName, username }: userData = response.data; 
+                const { email, firstName, lastName, userName, permissions }: userData = response.data; 
                 // save user data in session storage
-                sessionStorage.setItem('userData', JSON.stringify({ email, firstName, lastName, username }));
+                sessionStorage.setItem('userData', JSON.stringify({ email, firstName, lastName, userName, permissions }));
                 // update isLoggedIn
                 sessionStorage.setItem('isLoggedIn', 'true');
                 setUser({
                     email,
                     firstName,
                     lastName,
-                    username,
-                    isLoggedIn: true
+                    userName,
+                    isLoggedIn: true,
+                    permissions,
                 });
                 navigate('/');
             }

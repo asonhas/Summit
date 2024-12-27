@@ -3,21 +3,14 @@ import { useUser } from "../../../../../contexts/User-Context";
 import CustomDatePicker from "./components/CustomDatePicker";
 import { axiosClient } from "../../../../../axios";
 import Swal, { SweetAlertIcon } from 'sweetalert2';
+import { priorityValues, taskDataType } from "../../../../../types/Types";
 import './CreateTask.css';
 import './reactDatePicker.css';
+import Utils from "../../../../../utils/Utils";
 
 interface CreateTaskProps {
     setShowCreateTask: (setShowCreateTask: boolean) => void;
 }
-
-type priorityValues =  'Low' | 'Medium' | 'High';
-
-type taskDataType = {
-    title: string,
-    description: string,
-    assignedTo: string,
-    duedate: string,
-};
 
 function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
     const { user } = useUser();
@@ -50,15 +43,14 @@ function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
                     assignedTo: data.current.assignedTo,
                     duedate: data.current.duedate,
                     priority,
+                    username: user?.userName,
                 })
                 if(response.status == 201){
-                    //alert('The task was saved successfully.');
-                    customAlert('Create Task','The task was saved successfully.','warning','OK');
+                    Utils.customAlert('Create Task','The task was saved successfully.','warning','OK');
                     setShowCreateTask(false);
                 }
             }else {
-                //alert('Some of the fields are empty. Please note that all fields are required.');
-                customAlert('Create Task','Some of the fields are empty. Please note that all fields are required.','warning','OK');
+                Utils.customAlert('Create Task','Some of the fields are empty. Please note that all fields are required.','warning','OK');
             }
         } catch (error) {
             console.error('Something went wrong:',error);
@@ -87,7 +79,7 @@ function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
     return(
         <div className='create-task-container'>
             <div className='task-form-row'>
-                <h3>creator: <span style={{ marginLeft: "55px" }}>{user?.username}</span></h3>
+                <h3>creator: <span style={{ marginLeft: "55px" }}>{user?.userName}</span></h3>
             </div>
             <div className='task-form-row'>
                 <h3>Task title:</h3>

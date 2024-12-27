@@ -92,17 +92,20 @@ html, body {
 }
 
 .tasks-container .tasks-table-container {
+    display: flex;
+    flex-direction: column;
     margin: 20px 0;
     padding: 20px 0;
     background-color: white;
-    width: 100%; /* Ensure it spans the full container width */
+    width: 100%; 
     height: auto;
     box-sizing: border-box;
-    flex-shrink: 0; /* Prevent shrinking when resizing */
+    flex-shrink: 0; 
+    overflow-x: auto; /* Add horizontal scrolling */
 }
 
-.tasks-container .tasks-table-container h2{
-    margin-left:15px;
+.tasks-container h2{
+    margin:15px;
     text-decoration: underline;
 }
 
@@ -112,7 +115,8 @@ html, body {
     border: 1px solid #ccc;
     border-collapse: collapse;
     margin: 10px;
-    position: relative;
+    width: 1680px; /* Fixed width for the table */
+    min-width: 1200px; /* Ensure the table doesn't shrink smaller */
 }
 
 .tasks-container .tasks-table-container .tasks-table .tasks-header {
@@ -131,6 +135,11 @@ html, body {
     background-color: #fff;
 }
 
+.tasks-container .tasks-table-container .tasks-table .task-row:hover{
+    font-weight: bold;
+    cursor: pointer;
+}
+
 .tasks-container .tasks-table-container .tasks-table .task-row:nth-child(odd) {
     background-color: #f2f2f2;
 }
@@ -139,11 +148,13 @@ html, body {
 .tasks-container .tasks-table-container .tasks-table .task-row span {
     flex: 1; /* Equal space distribution for columns */
     padding: 8px;
+    border-right: 1px solid black;
 }
 
 .tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(1),
 .tasks-container .tasks-table-container .tasks-table .task-row span:nth-child(1) {
     flex: 0 0 120px; /* Fixed width for column 1 */
+    border-left: 1px solid black;
 }
 
 .tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(2),

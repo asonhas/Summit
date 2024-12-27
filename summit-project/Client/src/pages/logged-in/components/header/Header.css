@@ -11,16 +11,11 @@
 }
 
 .headerContainer .userData {
-    margin-left: auto; /* Pushes this to the left */
-    max-width: 180px;
+    margin-right: 5px;
+    margin-left: auto;
+    max-width: 350px;
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-.headerContainer .userData img{
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
 }
 
 .headerContainer .title{

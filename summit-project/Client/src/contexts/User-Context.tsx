@@ -5,7 +5,8 @@ export type UserData = {
   email: string;
   firstName: string;
   lastName: string;
-  username: string;
+  userName: string;
+  permissions: string;
 };
 
 type UserContextType = {

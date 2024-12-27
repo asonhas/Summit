@@ -7,6 +7,7 @@ import Teams from "./components/teams/Teams";
 import Calendar from "./components/calendar/Calendar";
 import Chat from "./components/chat/Chat";
 import './mainContent.css';
+import Users from "./components/users/Users";
 
 function MainContent(): ReactNode{
     const [activeComponent, setActiveComponent] = useState<string>('Tasks ');
@@ -23,6 +24,8 @@ function MainContent(): ReactNode{
                 return <Calendar />;
             case 'Chat':
                 return <Chat />;
+            case 'Users':
+                return <Users />;
             default:
                 return <Tasks />;
         }

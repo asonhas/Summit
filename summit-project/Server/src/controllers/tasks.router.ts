@@ -24,7 +24,7 @@ tasksRouter.put('/saveTask',authMiddleware,async (req,res)=>{
             assignedTo,
             duedate,
             priority,
-            userID: (req as any).userID,
+            userName: (req as any).userName,
         });
         await newTask.save();
         res.status(201).json({ message: 'Task saved successfully' });
@@ -33,12 +33,9 @@ tasksRouter.put('/saveTask',authMiddleware,async (req,res)=>{
     }
 });
 
-tasksRouter.get('',authMiddleware,async (req,res)=>{
-    /*
-    query tasks to get all tasks where for userID
-    */
+tasksRouter.post('/',authMiddleware,async (req,res)=>{
     try {
-        const tasks = await TasksModel.find({ userID: (req as any).userID });
+        const tasks = await TasksModel.find({ userName: (req as any).userName });
         if (tasks) {
             res.json({ success: true, tasks });
         } else {

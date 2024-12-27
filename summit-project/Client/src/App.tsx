@@ -4,6 +4,7 @@ import LoginPage from './pages/login/LoginPage';
 import MainContent from './pages/logged-in/mainContent';
 import { useEffect, useState } from 'react';
 import { useUser } from './contexts/User-Context';
+import AuthProvider from './contexts/Auth-Context';
 
 function App() {
   const { user } = useUser();
@@ -20,9 +21,11 @@ function App() {
           <Route path="/" element={<LoginPage />} />
         </Routes>
       :
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<MainContent />} /> 
         </Routes>
+        </AuthProvider>
       }
     </BrowserRouter>
   )

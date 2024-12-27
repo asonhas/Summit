@@ -12,7 +12,6 @@ const app = express();
 const port = 3000;
 
 const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/';
-console.log('mongoURI:',mongoURI);
 mongoose.connect(mongoURI).then(() => {
   console.log("MongoDB is connected!");
 }).catch((err) => console.error(err));
