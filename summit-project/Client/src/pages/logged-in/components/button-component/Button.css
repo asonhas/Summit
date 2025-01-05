@@ -1,0 +1,15 @@
+.btn{
+    display: flex;
+    justify-content: center; /* Center the content inside the button */
+    align-items: center; /* Center the content inside the button */
+    padding: 10px 20px; /* Add some padding for a button-like appearance */
+    background-color: #3c8cbd; /* Example button color */ 
+    color: white; /* Example text color */
+    border-radius: 10px; /* Example rounded corners */
+    margin-top: auto;
+}
+.btn:hover{
+    cursor: pointer;
+    background-color: #007bff;
+    font-weight: bold;
+}

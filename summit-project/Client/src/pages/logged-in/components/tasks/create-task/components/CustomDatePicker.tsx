@@ -2,10 +2,12 @@ import React, { memo, ReactNode, useCallback, useEffect, useState } from 'react'
 import './CustomDatePicker.css';
 
 interface customDatePickerProps {
-  setChoosedDate: (component: string) => void;
+  setChoosedDate: (value: string) => void;
+  width?: string;
+  value?: string;
 }
 
-function CustomDatePicker({ setChoosedDate }: customDatePickerProps): ReactNode {
+function CustomDatePicker({ setChoosedDate, width, value }: customDatePickerProps): ReactNode {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [minDate, setMinDate] = useState<string>('');
 
@@ -30,17 +32,24 @@ function CustomDatePicker({ setChoosedDate }: customDatePickerProps): ReactNode 
     const month = today.getMonth()+1;
     const day = today.getDate();
     const _date = day+'/'+month+'/'+year;
-    setSelectedDate(_date);
+    if(value){
+      setSelectedDate(value);
+      setChoosedDate(value);
+    }else{
+      setSelectedDate(_date);
+      setChoosedDate(_date);
+    }
     const min = new Date().toISOString().split('T')[0];
     setMinDate(min);
-    setChoosedDate(_date);
-  }, [setChoosedDate]);
+    
+  }, [setChoosedDate, value]);
 
   return (
-    <div className='container'>
+    <div className='date-container' style= {{width: width ? width : undefined}}>
       <input
         type="text"
         id="date"
+        style= {{width: width ? width : undefined}}
         className='date'
         name="date"
         value={selectedDate}

@@ -24,5 +24,6 @@ export const verifyToken = (secret: any, token: any) => {
     secret,
     encoding: 'base32',
     token,
+    window: 1,
   });
 };

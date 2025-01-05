@@ -1,0 +1,107 @@
+.team-table {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px; /* Space between rows */
+    height: 100%; 
+}
+  
+.team-table .team-row {
+    display: flex;
+    position: relative;
+}
+
+.team-table .team-row .team-cell:first-child {
+    width: 140px; /* Fixed width for the first cell */
+}
+  
+.team-table .team-row .team-cell:last-child {
+    flex: 1; /* Auto width for the second cell */
+}
+  
+.team-table .team-row .team-cell {
+    box-sizing: border-box;
+    padding: 5px;
+    height: 45px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.team-table .team-row .team-cell .user-permissions{
+    height: 35px;
+    width: 300px;
+    border-radius: 7px;
+    padding: 5px;
+}
+
+.team-table .team-row .last-cell{
+    box-sizing: border-box;
+    padding: 5px;
+    height: 450px;
+    display: flex;
+    justify-content: flex-start;
+}
+.team-table .team-row .team-last-row{
+    height: 420px;
+    padding: 5px;
+}
+.team-table .team-row .last-row img{
+    width: 300px; /* Set your desired width */
+    height: 250px; /* Set your desired height */
+    object-fit: cover; /* Ensures the image fits within the set dimensions */
+    overflow: hidden; /* Ensures no scrollbars appear */
+}
+
+.team-table .team-row .team-cell h3 {
+    margin-left: 5px;
+}
+
+.team-table .team-row .users{
+    width: 300px;
+    padding: 10px;
+    display: flex; 
+    flex-direction: column;
+}
+.team-table .team-row .users .users-box{
+    border: 1px solid black; 
+    flex: 1;
+    margin-top: 5px;
+}
+.team-table .team-row .users .users-box li{
+    padding: 5px 10px;
+    font-size: large;
+}
+
+.team-table .team-row .add-remove{
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+.team-table .team-row .add-remove h3{
+    border: 1px solid gray;
+    border-radius: 15px;
+    padding: 5px 10px;
+}
+.team-table .team-row .add-remove h3:hover{
+    cursor: pointer;
+    border: 1px solid black;
+}
+
+.team-table .team-row .save-btn{
+    display: flex;
+    justify-content: center; /* Center the content inside the button */
+    align-items: center; /* Center the content inside the button */
+    padding: 10px 20px; /* Add some padding for a button-like appearance */
+    background-color: #3c8cbd; /* Example button color */ 
+    color: white; /* Example text color */
+    border-radius: 5px; /* Example rounded corners */
+    margin-left: auto; /* Push the button to the right */
+    margin-top: auto;
+}
+.team-table .team-row .save-btn:hover{
+    cursor: pointer;
+    background-color: #007bff;
+    font-weight: bold;
+}

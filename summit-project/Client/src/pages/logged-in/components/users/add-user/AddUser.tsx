@@ -1,6 +1,8 @@
 import { memo, ReactNode, useCallback, useEffect, useState } from "react";
 import './AddUser.css';
 import { axiosClient } from "../../../../../axios";
+import Utils from "../../../../../utils/Utils";
+import axios from "axios";
 
 interface AddUserProps {
     setAddUser: (setAddUser: boolean) => void;
@@ -18,7 +20,10 @@ function AddUder({ setAddUser }: AddUserProps):ReactNode{
 
     const addUser = useCallback(async () =>{
         try {
-            let secret = '';
+            const returnedValues = {
+                conflict: '',
+                secret: '',
+            };
             const fNameElement = document.getElementById('fName') as HTMLInputElement;
             const lNameElement = document.getElementById('lName') as HTMLInputElement;
             const userNameElement = document.getElementById('userName') as HTMLInputElement;
@@ -35,24 +40,25 @@ function AddUder({ setAddUser }: AddUserProps):ReactNode{
                     passwordElement.value == repeatPasswordElement.value
                 )
             ){
-                const adduserResponse = await axiosClient.put('/api/users/adduser',{
-                    firstName: fNameElement.value,
-                    lastName:  lNameElement.value,
-                    newusername: userNameElement.value,
-                    email: emailElement.value,
-                    password: passwordElement.value,
-                    permissions,
-                });
-                
-                if(adduserResponse.status == 11000){
-                    console.log('status 11000:',adduserResponse.data);
-                } else if(adduserResponse.status == 404){
-                    console.log('status 404',adduserResponse.data);
-                }else if(adduserResponse.status == 200){
-                    secret = String(adduserResponse.data.qrCode);
+                try {
+                    const adduserResponse = await axiosClient.put('/api/users/adduser',{
+                        firstName: fNameElement.value,
+                        lastName:  lNameElement.value,
+                        newusername: userNameElement.value,
+                        email: emailElement.value,
+                        password: passwordElement.value,
+                        permissions,
+                    });
+                    returnedValues.secret = adduserResponse.data.qrCode;
+                } catch (error) {
+                    if(axios.isAxiosError(error)){
+                        if (error.response && error.response.status === 409) {
+                            returnedValues.conflict = error.response.data.error;
+                        } 
+                    }
                 }
             }
-            return secret;
+            return returnedValues;
         } catch (error) {
             console.error(error);
         }
@@ -63,18 +69,26 @@ function AddUder({ setAddUser }: AddUserProps):ReactNode{
     },[]); 
 
     const handleSaveUser = useCallback(async ()=>{
-        const secretQr = await addUser();
-        const addUserDiv = document.querySelector('.add-user-div') as HTMLDivElement;
-        addUserDiv.style.height = '730px';
-        const authenticatorDiv = document.getElementById('authenticator-div') as HTMLDivElement;
-        authenticatorDiv.style.display = 'flex';
-        // disable save btn
-        const saveBtn = document.querySelector('.save-btn') as HTMLDivElement;
-        saveBtn.style.pointerEvents = 'none';
-        saveBtn.style.opacity = '0.6';
-        // make all inputs read only
-        const qrImg = document.getElementById('qrImg') as HTMLImageElement;
-        qrImg.src = secretQr as string;
+        const addUserReturndValues = await addUser();
+        if(addUserReturndValues && addUserReturndValues.secret.length > 0){
+            const addUserDiv = document.querySelector('.add-user-div') as HTMLDivElement;
+            addUserDiv.style.height = '730px';
+            const authenticatorDiv = document.getElementById('authenticator-div') as HTMLDivElement;
+            authenticatorDiv.style.display = 'flex';
+            // disable save btn
+            const saveBtn = document.querySelector('.save-btn') as HTMLDivElement;
+            saveBtn.style.pointerEvents = 'none';
+            saveBtn.style.opacity = '0.6';
+            // make all inputs read only
+            const qrImg = document.getElementById('qrImg') as HTMLImageElement;
+            qrImg.src = addUserReturndValues.secret;
+        }else{
+            if(addUserReturndValues && addUserReturndValues.conflict.length > 0){
+                Utils.customAlert('Error add user',`Adding the user failed because: ${addUserReturndValues.conflict}`,'info','Close');
+            }else{
+                Utils.customAlert('Error add user','Adding the user failed.','info','Close');
+            }
+        }
     },[addUser]);
     return(
         <div className="table">
@@ -109,8 +123,8 @@ function AddUder({ setAddUser }: AddUserProps):ReactNode{
                         className='user-permissions'
                         value={permissions}
                         onChange={handleSetPermissions}>
-                        <option value='Low'>regular</option>
-                        <option value='Medium'>administrator</option>
+                        <option value='regular'>regular</option>
+                        <option value='administrator'>administrator</option>
                     </select>
                 </div>
             </div>

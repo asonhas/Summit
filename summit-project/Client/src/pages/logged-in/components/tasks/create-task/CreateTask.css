@@ -40,12 +40,20 @@
     border-radius: 8px;
 }
 
+.create-task-container .task-form-row .task-assigned-to{
+    height: 35px;
+    width: 500px;
+    border-radius: 7px;
+    padding: 5px;
+}
+
 .create-task-container .task-form-row .task-priority{
     height: 35px;
     width: 170px;
     border-radius: 7px;
     padding: 5px;
 }
+
 .create-task-container .task-form-row .task-priority:hover{
     cursor: pointer;
 }

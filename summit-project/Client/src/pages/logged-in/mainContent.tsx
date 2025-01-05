@@ -8,18 +8,20 @@ import Calendar from "./components/calendar/Calendar";
 import Chat from "./components/chat/Chat";
 import './mainContent.css';
 import Users from "./components/users/Users";
+import { activeComponentValues } from "../../types/Types";
 
 function MainContent(): ReactNode{
-    const [activeComponent, setActiveComponent] = useState<string>('Tasks ');
+    const [activeComponent, setActiveComponent] = useState<activeComponentValues>('Tasks');
+    const [customComponent, setCustomComponent] = useState<ReactNode | null>(null);
 
     const renderComponent = useCallback(()=>{
         switch (activeComponent) {
             case 'Home':
                 return <Home />;
             case 'Tasks':
-                return <Tasks />;
+                return <Tasks setCustomComponent={setCustomComponent} />;
             case 'Teams':
-                return <Teams />;
+                return <Teams setCustomComponent={setCustomComponent} />;
             case 'Calendar':
                 return <Calendar />;
             case 'Chat':
@@ -27,7 +29,7 @@ function MainContent(): ReactNode{
             case 'Users':
                 return <Users />;
             default:
-                return <Tasks />;
+                return <Tasks setCustomComponent={setCustomComponent} />;
         }
     },[activeComponent]);
 
@@ -35,9 +37,9 @@ function MainContent(): ReactNode{
         <div className='mainContentContainer'>
             <Header />
             <div className='contentWrapper'>
-                <LeftNavbar setActiveComponent={setActiveComponent} />
+                <LeftNavbar setActiveComponent={setActiveComponent} setCustomComponent={setCustomComponent} />
                 <div className='componentSwitcher'>
-                    {renderComponent()}
+                    {customComponent || renderComponent()}
                 </div>
             </div>
         </div>

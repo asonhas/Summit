@@ -1,4 +1,5 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import { UserModel } from '../models/user.model';
 import { v4 as uuidv4 } from 'uuid';
 import { SessionModel } from '../models/sessions.model';
@@ -25,16 +26,11 @@ usersRouter.post('/login',async (req: any,res: any) => {
                 return res.status(500).send({ error: 'Internal server error.' });
             }
             if(passwordVerified){
+                const pauload = { email: data.email, userName: data.username, firstName: data.firstName, lastName: data.lastName, permissions: data.permissions };
+                const _ud = jwt.sign(pauload, process.env.JWTPRIVATEKEY as string);
                 const sid =  uuidv4();
                 res.cookie(`${data.username}-sid`, sid, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
-                // JWT
-                res.json({ 
-                    email: data.email,
-                    userName: data.username,
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    permissions: data.permissions,
-                 });
+                res.json({_ud});
                 const newSession = new SessionModel({
                     sessionId: sid,
                     userId: data.userID as string,
@@ -49,7 +45,18 @@ usersRouter.post('/login',async (req: any,res: any) => {
     res.status(404).send("Bad combination of user and password");
 });
 
-
+usersRouter.post('/list-users',authMiddleware,async (req: any,res: any)=>{
+    const allUsers = await UserModel.find();
+    if(allUsers){
+        const users = allUsers.map((user)=> {
+            return ({
+                username: user.username,
+            });
+        });
+        return res.json({users});
+    }
+    return res.status(500).send({ error: 'Internal server error.' }); 
+});
 
 usersRouter.post('/',authMiddleware,async (req: any,res: any)=>{
     try {
@@ -148,19 +155,28 @@ usersRouter.put('/adduser',authMiddleware,saveUser,async (req: any,res: any)=>{
       }
 });
 
-usersRouter.delete('/delete/:username',authMiddleware,async(req,res)=>{
+usersRouter.delete('/delete/',authMiddleware,async(req: any, res: any)=>{
     const userPermissions: string = (req as any).permissions as string;
     if(typeof userPermissions == 'string' && userPermissions == 'administrator'){
-        const user = req.params.username;
-        try {
-            const deletedUser = await UserModel.findOneAndDelete({username: user});    
-            if (deletedUser) {
-                res.status(200).json({ message: 'User deleted successfully'});
+        const { userToDelete, tokentoVerify } = req.body;
+        if(userToDelete && tokentoVerify){
+            const user = await UserModel.findOne({ username: (req as any).userName }) // The user who wants to delete a user
+            if(user){
+                const verifyTokenResult: boolean = verifyToken(user.secret2fa, tokentoVerify);
+                if(verifyTokenResult){
+                    try {
+                        const deletedUser = await UserModel.findOneAndDelete({username: userToDelete});    
+                        if (deletedUser) {
+                            return res.status(200).json({ message: 'User deleted successfully'});
+                        }
+                    } catch (error) {
+                        return res.status(500).json({ message: 'Internal server error' });
+                    }
+                }
+                return res.status(401).json({ message: 'Token verification failed' });
             }
-        } catch (error) {
-            res.status(500).json({ message: 'Internal server error' });
-        }
-        
+        } 
+        return res.status(400).json({ message: 'Missing required fields' });
     }else{
         res.status(403).json({error: 'You do not have permission to perform the requested action.'});
     }

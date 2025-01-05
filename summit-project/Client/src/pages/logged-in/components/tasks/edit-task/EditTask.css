@@ -1,0 +1,128 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+.edit-task-container{
+    display: flex;
+    flex-direction: column; 
+    width: 100%;
+    height: 100%;
+    position: relative;
+    box-sizing: border-box;
+}
+.edit-task-container .task-id{
+    border-bottom: 3px solid black;
+    width: 100%;
+    height: 50px;
+}
+.edit-task-container .task-content{
+    display: flex;
+    position: relative;
+    flex: 1;
+    margin-top: 5px;
+    overflow: auto; /* Allow scrolling if content overflows the viewport */
+}
+.edit-task-container .task-content .first-child{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 0 0 50%; /* Fixed at 70% of parent */
+    max-width: 70%;
+    box-sizing: border-box; /* Include padding and border in width */
+    margin: 5px;
+    padding: 5px;
+    min-height: 700px;
+    border-right: 3px solid black;
+}
+.edit-task-container .task-content .first-child .row{
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.edit-task-container .task-content .first-child .row .textarea-input{
+    margin-left: 3px;
+    min-width: 500px;
+    min-height: 100px;
+    resize: none;
+    padding: 5px;
+    font-size: large;
+    border: 1px solid black;
+    border-radius: 8px;
+}
+
+.edit-task-container .task-content .first-child .row .task-priority{
+    height: 35px;
+    width: 500px;
+    border-radius: 7px;
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.edit-task-container .task-content .last-child{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1; 
+    box-sizing: border-box; /* Include padding and border in width */
+    margin: 5px;
+    padding: 5px;
+    min-height: 700px;
+}
+
+.edit-task-container .task-content .last-child .row{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    gap: 20px;
+}
+.edit-task-container .task-content .last-child .last{
+    margin-top: auto;
+}
+
+.edit-task-container .task-content .last-child .first{
+    display: flex;
+    background-color: #bcbbbb;
+    flex: 1;
+    padding: 5px;
+    position: relative;
+    overflow-y: auto; 
+}
+
+.edit-task-container .task-content .last-child .first .updates-container{
+    border-radius: 15px;
+    padding: 10px;
+    background-color: #d5d5d5 ;
+    overflow-y: hidden;
+    min-height: fit-content;
+}
+
+.edit-task-container .task-content .last-child .first .updates-container .update-header{
+    display: flex; 
+    flex-direction: row;
+    background-color: #d5d5d5;
+    width: fit-content;
+    border-radius: 25px;
+    padding: 0 10px
+}
+
+.edit-task-container .task-content .last-child .first .updates-container p{
+    padding: 10px;
+    font-size: larger;
+    background-color: white;
+    margin-top: 10px;
+    border-radius: 25px;
+    height: auto;
+}
+
+
+
+.edit-task-container .task-content .last-child .row .textarea-input{
+    margin-left: 3px;
+    min-width: 500px;
+    min-height: 100px;
+    resize: none;
+    padding: 5px;
+    font-size: large;
+    border: 1px solid black;
+    border-radius: 8px;
+}

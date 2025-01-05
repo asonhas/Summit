@@ -1,0 +1,172 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.teams-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    width: 100%;
+    height: 100%;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.teams-container .add-team {
+    display: flex;
+    align-items: center;
+    align-self: flex-start;
+    border-bottom: 2px solid black;
+    width: 100%;
+}
+.teams-container .add-team h1 {
+    width: 300px;
+}
+.teams-container .add-team h1:hover {
+    cursor: pointer;
+    color: blue;
+}
+.teams-container .add-team img {
+    width: 35px;
+    height: 35px;
+    margin-right: 10px;
+}
+.teams-container .add-team-background {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+}
+.teams-container .add-team-background .add-team-div {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 670px; 
+    height: 430px;
+    background-color: #eceff4;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    border-radius: 10px; 
+}
+.teams-container .add-team-background .add-team-div .close-window-container {
+    display: flex;
+    justify-content: space-between;
+    background-color: #3c8cbd;
+}
+.teams-container .add-team-background .add-team-div .close-window-container .close-window,
+.teams-container .add-team-background .add-team-div .close-window-container .close-window-title {
+    padding: 10px; 
+    background-color: #3c8cbd;
+    font-weight: bolder;
+    box-shadow: 0 4px 8px rgba(0, 140, 189, 0.3);
+}
+
+.teams-container .add-team-background .add-team-div .close-window-container .close-window:hover {
+    cursor: pointer;
+}
+.teams-container .add-team-background .add-team-div .add-team-content {
+    display: flex;
+    flex-direction: column; 
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.teams-container h2{
+    margin: 5px;
+    height: 35px;
+    text-decoration: underline;
+}
+
+.teams-container .teams-table-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%; 
+    height: auto;
+    box-sizing: border-box;
+    flex-shrink: 0; 
+    overflow-x: auto; /* Add horizontal scrolling */
+}
+
+.teams-container .teams-table-container .teams-table {
+    display: flex;
+    flex-direction: column;
+    border-collapse: collapse;
+    width: 1680px; /* Fixed width for the table */
+    min-width: 1200px; /* Ensure the table doesn't shrink smaller */
+    border: 1px solid black;
+}
+.teams-container .teams-table-container .teams-table .teams-header {
+    font-weight: bold;
+    background-color: #3C8CBD;
+    display: flex;
+    align-items: center;
+}
+.teams-container .teams-table-container .teams-table .teams-header .refresh{
+    margin: 2px 13px;
+    height: 25px;
+}
+
+.teams-container .teams-table-container .teams-table .teams-header .refresh:hover{
+    cursor: pointer;
+}
+
+.teams-container .teams-table-container .teams-table .teams-header,
+.teams-container .teams-table-container .teams-table .team-row {
+    display: flex;
+    width: 100%;
+}
+
+.teams-container .teams-table-container .teams-table .team-row {
+    background-color: #fff;
+}
+
+.teams-container .teams-table-container .teams-table .team-row:hover{
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.teams-container .teams-table-container .teams-table .team-row .delete-user{
+    margin-left: 12px; 
+    margin-top: 3px;
+    height: 30px;
+}
+
+.teams-container .teams-table-container .teams-table .team-row:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.teams-container .teams-table-container .teams-table .teams-header span,
+.teams-container .teams-table-container .teams-table .team-row span {
+    flex: 1; /* Equal space distribution for columns */
+    padding: 8px;
+    border-right: 1px solid black;
+}
+
+.teams-container .teams-table-container .teams-table .teams-header span:nth-child(1),
+.teams-container .teams-table-container .teams-table .team-row span:nth-child(1) {
+    flex: 0 0 120px; /* Fixed width for column 1 */
+}
+.teams-container .teams-table-container .teams-table .teams-header span:nth-child(2),
+.teams-container .teams-table-container .teams-table .team-row span:nth-child(2) {
+    flex: 0 0 500px; /* Fixed width for column 1 */
+}
+.teams-container .teams-table-container .teams-table .teams-header span:nth-child(3),
+.teams-container .teams-table-container .teams-table .team-row span:nth-child(3) {
+    flex: 0 0 500px; /* Fixed width for column 1 */
+}
+.teams-container .teams-table-container .teams-table .teams-header span:nth-child(4),
+.teams-container .teams-table-container .teams-table .team-row span:nth-child(4) {
+    flex: 0 0 500px; /* Fixed width for column 1 */
+}

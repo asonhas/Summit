@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/User-Context';
 import { userData } from '../../types/Types';
 import './LoginPage.css';
+import Utils from '../../utils/Utils';
 
 function Login(): ReactNode {
     const navigate = useNavigate()
@@ -20,9 +21,11 @@ function Login(): ReactNode {
                 'pass': pwdInput.value
             });
             if(response && response.status == 200){
-                const { email, firstName, lastName, userName, permissions }: userData = response.data; 
+                const {_ud }: userData = response.data; 
+                const {email, firstName, lastName, userName, permissions } = Utils.parseJwt(_ud);
+                
                 // save user data in session storage
-                sessionStorage.setItem('userData', JSON.stringify({ email, firstName, lastName, userName, permissions }));
+                sessionStorage.setItem('userData', _ud.valueOf());
                 // update isLoggedIn
                 sessionStorage.setItem('isLoggedIn', 'true');
                 setUser({

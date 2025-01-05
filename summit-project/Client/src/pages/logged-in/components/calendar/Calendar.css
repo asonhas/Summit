@@ -1,0 +1,175 @@
+.calendar {
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    font-family: Arial, sans-serif;
+}
+
+
+.days-of-week,
+.dates {
+    display: flex;
+    flex-wrap: wrap;
+}
+  
+ 
+.day-header,
+.date {
+    width: calc(100% / 7); /* 7 columns */
+    height: 100px;
+    display: flex;
+    flex-direction: column; /* Stack date-number and events vertically */
+    align-items: center;
+    justify-content: flex-start; /* Align items to the top */
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.date-header{
+    display: flex;
+    align-items: center; /* Align vertically */
+    justify-content: center; /* Align horizontally */
+    gap: 5px; /* Space between the elements */
+    width: 100%; /* Take full width */
+    margin-bottom: 5px; /* Space between header and events */
+    overflow-y: hidden;
+}
+
+.add-event-btn {
+    font-size: 18px; /* Adjust font size as needed */
+    background-color: transparent; /* Transparent background */
+    border: none; /* Remove border */
+    cursor: pointer; /* Pointer cursor */
+    padding: 0; /* Remove padding */
+    color: #0000EE; /* Match hover color */
+    overflow-y: hidden;
+}
+
+.add-event-btn:hover {
+    color: #0056b3; /* Change color on hover */
+}
+
+.date.empty {
+    background-color: #f9f9f9;
+}
+  
+.date:not(.empty):hover {
+    background-color: #e6f7ff;
+    cursor: pointer;
+}
+  
+.date {
+    font-size: 14px;
+    height: 150px;
+}
+  
+.day-header {
+    font-weight: bold;
+    background-color: #3c8cbd;
+    height: 40px;
+    padding-top: 10px;
+}
+  
+.date-number {
+    font-size: 14px;
+    font-weight: bold;
+    overflow-y: hidden;
+}
+
+.events {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center; /* Start events below the date */
+    width: 100%;
+    padding: 2px;
+    margin-bottom: 5px;
+    gap: 5px; /* Add space between multiple events */
+    scrollbar-width: none;
+}
+
+.event {
+    background-color: #b1e1ff;
+    color: #333;
+    border-radius: 5px;
+    padding: 2px 4px;
+    font-size: 12px;
+    text-align: center;
+    width: 90%; /* Fit within the date cell */
+    box-sizing: border-box;
+}
+.event:hover {
+    background-color: #91d5ff;
+    cursor: pointer;
+}
+
+h3,h2{
+    margin: 5px;
+}
+h3:hover{
+    cursor: pointer;
+    color: #0000EE;
+}
+
+.calendar .add-event-background {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+}
+
+.calendar .add-event-background .add-event-div {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 450px; 
+    height: 325px;
+    background-color: #eceff4;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    border-radius: 10px; 
+}
+
+.calendar .add-event-background .add-event-div .close-window-container {
+    display: flex;
+    justify-content: space-between;
+    background-color: #3c8cbd;
+}
+
+.calendar .add-event-background .add-event-div .close-window-container .close-window,
+.calendar .add-event-background .add-event-div .close-window-container .close-window-title {
+    padding: 10px; 
+    background-color: #3c8cbd;
+    font-weight: bolder;
+    box-shadow: 0 4px 8px rgba(0, 140, 189, 0.3);
+}
+
+.calendar .add-event-background .add-event-div .close-window-container .close-window:hover {
+    cursor: pointer;
+}
+
+.calendar .add-event-background .add-event-div .add-event-content {
+    display: flex;
+    flex-direction: column; 
+    padding: 10px;
+    margin-top: 10px;
+}
+
+
+
+ 
+  
+
+  
+
+  
+  
+  
+  
+  

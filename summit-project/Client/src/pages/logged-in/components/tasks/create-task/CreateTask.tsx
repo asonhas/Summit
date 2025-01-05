@@ -2,7 +2,6 @@ import { memo, ReactNode, useCallback, useEffect, useRef, useState } from "react
 import { useUser } from "../../../../../contexts/User-Context";
 import CustomDatePicker from "./components/CustomDatePicker";
 import { axiosClient } from "../../../../../axios";
-import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { priorityValues, taskDataType } from "../../../../../types/Types";
 import './CreateTask.css';
 import './reactDatePicker.css';
@@ -16,23 +15,25 @@ function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
     const { user } = useUser();
     const [ choosedDate, setChoosedDate ] = useState<string>('');
     const [ priority, setPriority] = useState<priorityValues>('Low');
-
-    const customAlert = useCallback(
-        (title: string, text: string, icon: SweetAlertIcon, confirmButtonText: string) => {
-            
-            Swal.fire({ title, text, icon, confirmButtonText });
-    },[]);
+    const [ teams, setTeams ] = useState<Array<string>>([]);
+    const [ assignedTo, setAssignedTo ] = useState<string>('Choose a team');
 
     const data = useRef<taskDataType>({
         title: '',
         description: '',
-        assignedTo: '',
         duedate: '',
     });
 
+    useEffect(()=>{
+        axiosClient.post('/api/teams/list-teams')
+        .then((result)=>{
+            setTeams(result.data.teams);
+        });
+    },[]);
+
     const validateData = useCallback((): boolean => {
-        return Object.values(data.current).every((field) => field.trim().length > 0);
-    }, []);
+        return Object.values(data.current).every((field) => field.trim().length > 0) && assignedTo != 'Choose a team';
+    }, [assignedTo]);
 
     const handleSaveBtnClick = useCallback<()=> void>(async ()=>{
         try {
@@ -40,7 +41,7 @@ function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
                 const response = await axiosClient.put('/api/tasks/saveTask',{
                     title: data.current.title,
                     description: data.current.description,
-                    assignedTo: data.current.assignedTo,
+                    assignedTo: assignedTo,
                     duedate: data.current.duedate,
                     priority,
                     username: user?.userName,
@@ -54,19 +55,21 @@ function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
             }
         } catch (error) {
             console.error('Something went wrong:',error);
-            customAlert('Create Task','Something went wrong.','error','OK')
+            Utils.customAlert('Create Task','Something went wrong.','error','OK');
         }
         
-    },[customAlert, priority, setShowCreateTask, validateData]);
+    },[assignedTo, priority, setShowCreateTask, user?.userName, validateData]);
 
     const handleTitleChange = useCallback<(event: React.ChangeEvent<HTMLInputElement>)=> void>((event: React.ChangeEvent<HTMLInputElement>)=>{
         data.current.title = event.target.value;
     },[]);
+
     const handleDescriptionChange = useCallback<(event: React.ChangeEvent<HTMLTextAreaElement>)=> void>((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         data.current.description = event.target.value;
     }, []);
-    const handleAssignedToChange = useCallback<(event: React.ChangeEvent<HTMLInputElement>)=> void>((event: React.ChangeEvent<HTMLInputElement>)=>{
-        data.current.assignedTo = event.target.value;
+
+    const handleAssignedToChange = useCallback<(event: React.ChangeEvent<HTMLSelectElement>)=> void>((event: React.ChangeEvent<HTMLSelectElement>)=>{
+        setAssignedTo(event.target.value);
     },[]);
 
     const handleChange = useCallback<(event: React.ChangeEvent<HTMLSelectElement>)=> void>((event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -91,7 +94,18 @@ function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
             </div>
             <div className='task-form-row'>
                 <h3>Assigned to:</h3>
-                <input className='title-input' type='text' placeholder='Assigned to' onChange={handleAssignedToChange} required />
+                {/*<input className='title-input' type='text' placeholder='Assigned to' onChange={handleAssignedToChange} required />*/}
+                <div>
+                    <select 
+                        className='task-assigned-to'
+                        value={assignedTo}
+                        onChange={handleAssignedToChange}>
+                        <option value="Choose a team">Choose a team</option>
+                        {teams.map((team, index)=>(
+                            <option key={index} value={team}>{team}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
             <div className='task-form-row'>
                 <h3>Due date:</h3>

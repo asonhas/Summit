@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, ReactNode } from "react";
+import Utils from "../utils/Utils";
 
 export type UserData = {
   isLoggedIn: boolean
@@ -19,10 +20,18 @@ export const UserContext = createContext<UserContextType | undefined>(undefined)
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   
   const _userData = sessionStorage.getItem('userData');
+  const {email, firstName, lastName, userName, permissions } = Utils.parseJwt(_userData as string);
   const _isLoggedIn = sessionStorage.getItem('isLoggedIn');
   let userData: UserData | null = null;
   if(_userData && _isLoggedIn){
-    userData = JSON.parse(_userData);
+    userData = {
+      email,
+      firstName,
+      lastName,
+      userName,
+      isLoggedIn: true,
+      permissions,
+    };
     if(userData){
       userData.isLoggedIn = _isLoggedIn === 'true';
     }

@@ -24,7 +24,7 @@ function AuthProvider({ children }: { children: ReactNode }){
       dispatchUserContext?.(null); // clear user-context
   
       window.location.pathname = '/login' // navigate /login page*/
-    }, [dispatchUserContext]);
+    }, []);
     
     // create state for the AuthProvider context, the state will include the logout function
     const authContextData: AuthContextType = useMemo(() => ({
@@ -36,8 +36,11 @@ function AuthProvider({ children }: { children: ReactNode }){
         const requestInterceptor = axiosClient.interceptors.request.use((req) => {
             if (req.method === 'post' || req.method === 'put' || req.method === 'delete') {
                 req.data = {
-                    ...req.data, // Preserve existing data
-                    username: user?.userName, // Add your custom property
+                    // Preserve existing data
+                    ...req.data, 
+                    // Add custom property
+                    username: user?.userName, 
+                    token: sessionStorage.getItem('userData'),
                 };
             }
             return req; // Return the modified request configuration

@@ -1,9 +1,11 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import { SessionModel } from '../models/sessions.model';
 
 export const authMiddleware: express.RequestHandler = async (req, res, next) => {
-    const { username } = req.body;
-    if(username){
+    const { username, token } = req.body;
+    const userdata = jwt.verify(token,process.env.JWTPRIVATEKEY as string)
+    if(username && typeof userdata == 'object'){
         const sessionId = req.cookies[`${username}-sid`];
         if (!sessionId) {
             res.status(401).send('Unauthorized! Please login again.');

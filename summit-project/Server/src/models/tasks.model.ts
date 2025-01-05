@@ -8,6 +8,13 @@ const tasksSchema = new Schema({
     duedate: { type: String },
     priority: {type: String},
     userName: {type: String},
+    statusUpdate: [
+      {
+          username: { type: String, required: true },
+          update: { type: String, required: true },
+          timestamp: { type: Date, default: Date.now } 
+      }
+    ]
   });
   
   export const TasksModel = model('tasks', tasksSchema);

@@ -7,6 +7,8 @@ import refreshIcon from '../../../../assets/refresh-icon.png';
 import deleteIcon from '../../../../assets/delete-user.png';
 import './Users.css';
 import Utils from "../../../../utils/Utils";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 function Users(): ReactNode{
     const { user } = useUser();
@@ -40,7 +42,7 @@ function Users(): ReactNode{
             });
         });
 
-        const fetchTasks = async () => {
+        const fetchUsers = async () => {
             try {
                 const response = await axiosClient.post('/api/users/',{
                     username:  user?.userName,
@@ -53,7 +55,7 @@ function Users(): ReactNode{
             }
         };
         if(usersArr.length == 0){
-            fetchTasks();
+            fetchUsers();
         }
         
     }, [showAddUser, user?.userName, usersArr.length]);
@@ -63,18 +65,47 @@ function Users(): ReactNode{
 
     const handleDeleteUser = useCallback(async (event: React.MouseEvent<HTMLImageElement>)=>{
         const parentElement = event.currentTarget.parentElement as HTMLDivElement;
-        const spanElements = Array.from(parentElement.querySelectorAll('span'));
-        const username = spanElements[3].innerText;
-        if(typeof username == 'string' && username.length > 0){
-            try {
-                const response = await axiosClient.delete(`/api/users/delete/${username}`);
-                if (response && response.status === 200){
-                    Utils.customAlert('Delete user',`user ${username} is successfuly deleted`,'success','OK');
-                    setUsersArr([]);
+        if(parentElement){
+            const spanElements = Array.from(parentElement.querySelectorAll('span')) as HTMLSpanElement[];
+            if(spanElements){
+                const username = spanElements[3].innerText;
+                if(typeof username == 'string' && username.length > 0){
+                    Swal.fire({
+                        title:'Enter summit token',
+                        input: 'text',
+                        inputPlaceholder: 'Summit token',
+                        showCancelButton: true,
+                        confirmButtonText: 'Verify',
+                        cancelButtonText: 'Cancel',
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'You need to enter a code!';
+                            }
+                        }
+                    }).then(async (result)=>{
+                        if (result.isConfirmed) {
+                            try {
+                                const response = await axiosClient.delete(`/api/users/delete/`,{
+                                    data: {userToDelete: username, tokentoVerify: result.value },
+                                });
+                                if (response && response.status === 200){
+                                    Utils.customAlert('Delete user',`user ${username} is successfuly deleted`,'success','OK');
+                                    setUsersArr([]);
+                                }
+                            } catch (error) {
+                                if(axios.isAxiosError(error)){
+                                    if (error.response && error.response.status === 401) {
+                                        return Utils.customAlert('Delete user','Token verification failed.','error','OK');        
+                                    } 
+                                    if (error.response && error.response.status === 400) {
+                                        return Utils.customAlert('Delete user','Missing required data.','error','OK');        
+                                    }
+                                }
+                                Utils.customAlert('Delete user','Something went wrong, try again later.','error','OK');
+                            }
+                        }
+                    })
                 }
-            } catch (error) {
-                console.error(error);
-                Utils.customAlert('Delete user','Something went wrong, try again later.','error','OK');
             }
         }
     },[]);
@@ -99,7 +130,6 @@ function Users(): ReactNode{
             }
             <h2>All users:</h2>
             <div className='users-table-container'>
-                {/* do not display admin user */}
                 <div className='users-table'>
                     <div className='users-header'>
                         <span>First name</span>
