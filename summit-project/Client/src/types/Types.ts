@@ -5,6 +5,7 @@ export type taskType = {
     assignedTo: string,
     duedate: string,
     priority: string,
+    status: string,
 };
 
 export type userData ={
@@ -13,7 +14,7 @@ export type userData ={
     lastName: string,
     userName: string,
     permissions: string,
-    _ud: string
+    token: string
 };
 
 export type teamType = {
@@ -24,7 +25,7 @@ export type teamType = {
 };
 
 export type priorityValues =  'Low' | 'Medium' | 'High';
-
+export type statusValues = 'Open' | 'In progress' | 'Complete'
 export type activeComponentValues = 'Home' | 'Tasks' | 'Teams' | 'Calendar' | 'Chat' | 'Users';
 
 
@@ -39,8 +40,10 @@ export type taskDataType = {
     title: string,
     description: string,
     duedate: string,
-    priority: priorityValues | '',
+    priority?: priorityValues | '',
     statusUpdate: statusArrayType[],
+    assignedTo?: string,
+    status?: string,
 }
 
 export type teamInfoType = {
@@ -51,3 +54,9 @@ export type teamInfoType = {
 };
 
 export type side = 'left' | 'right';
+
+export type userCredentials = {
+    username: string;
+    password: string;
+    otp?: string;
+};

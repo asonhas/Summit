@@ -3,7 +3,7 @@
     position: fixed;
     flex-direction: column;
     justify-content: center;
-    height: 360px;
+    height: fit-content;
     box-sizing: border-box;
 }
 

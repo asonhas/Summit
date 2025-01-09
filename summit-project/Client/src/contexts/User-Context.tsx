@@ -23,19 +23,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const {email, firstName, lastName, userName, permissions } = Utils.parseJwt(_userData as string);
   const _isLoggedIn = sessionStorage.getItem('isLoggedIn');
   let userData: UserData | null = null;
-  if(_userData && _isLoggedIn){
-    userData = {
-      email,
-      firstName,
-      lastName,
-      userName,
-      isLoggedIn: true,
-      permissions,
-    };
-    if(userData){
-      userData.isLoggedIn = _isLoggedIn === 'true';
-    }
-  }
+  userData = {
+    email,
+    firstName,
+    lastName,
+    userName,
+    isLoggedIn: _isLoggedIn === 'true',
+    permissions,
+  };
   const [user, setUser] = useState<UserData | null>(userData);
   return (
     <UserContext.Provider value={{ user, setUser }}>

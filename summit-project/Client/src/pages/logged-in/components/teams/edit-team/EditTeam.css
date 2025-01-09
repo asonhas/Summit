@@ -15,6 +15,7 @@ body {
     border-bottom: 3px solid black;
     width: 100%;
     height: 50px;
+    min-height: fit-content;
 }
 
 .edit-team-container .team-content{
@@ -22,9 +23,24 @@ body {
     flex-direction: column;
     position: relative;
     flex: 1;
+    min-height: 500px;
     gap: 35px;
     margin-top: 5px;
-    overflow: auto; /* Allow scrolling if content overflows the viewport */
+    overflow-y: hidden;
+}
+.edit-team-container .team-content div{
+    overflow-y: hidden;
+    min-height: fit-content;
+}
+.edit-team-container .team-content .textarea-input{
+    margin-left: 3px;
+    min-width: 500px;
+    min-height: 100px;
+    resize: none;
+    padding: 5px;
+    font-size: large;
+    border: 1px solid black;
+    border-radius: 8px;
 }
 
 
@@ -35,9 +51,31 @@ body {
 }
 
 .edit-team-container .team-content .users .add-remove{
-    margin-top: 30px;
+    margin-top: 35px;
     display: flex; 
     flex-direction: column;
     justify-content: center;
     gap: 10px;
+}
+.edit-team-container .team-content .users .add-remove h3{
+    border: 1px solid gray;
+    border-radius: 15px;
+    padding: 5px 10px;
+}
+
+.edit-team-container .team-content .users .add-remove h3:hover{
+    cursor: pointer;
+    border: 1px solid black;
+}
+
+.edit-team-container .team-content .users ul{
+    border: 1px solid black; 
+    padding: 10px; 
+    width: 200px; 
+    height: 150px;
+}
+
+.edit-team-container .team-content .users li {
+    padding: 2px 10px;
+    margin-bottom: 3px;
 }

@@ -4,6 +4,7 @@ import { side, teamInfoType } from "../../../../../types/Types";
 import Input from "../../input-component/Input";
 import { axiosClient } from "../../../../../axios";
 import Button from "../../button-component/Button";
+import Utils from "../../../../../utils/Utils";
 
 interface editTeamProps {
     teamInfo: teamInfoType;
@@ -83,15 +84,32 @@ function EditTeam({teamInfo}: editTeamProps): ReactNode{
             teamName: event.target.value,
         }));
     },[]);
-    const handleChangeTeamDescription = useCallback((event: React.ChangeEvent<HTMLInputElement>)=>{
+    const handleChangeTeamDescription = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>)=>{
         setTeamInfoData((prev)=>({
             ...prev,
             teamDescription: event.target.value,
         }));
     },[]);
+
+    const handleSaveBtn = useCallback(async ()=>{
+        try {
+            const response = await axiosClient.post(`/api/teams/update/${teamInfoData.teamId}`,{
+                teamName: teamInfoData.teamName,
+                teamTitle: teamInfoData.teamDescription,
+                usersInTeam: usersInGroup.join(),
+            });
+            if(response.status == 200){
+                return Utils.customAlert('Edit team',`Team ${teamInfoData.teamId} updated successfully`,'success','OK');
+            }
+        } catch (error) {
+            console.error(error);
+            return Utils.customAlert('Edit team','Missing required data.','error','OK'); 
+        }
+    },[teamInfoData.teamDescription, teamInfoData.teamId, teamInfoData.teamName, usersInGroup]);
+
     return(
         <div className='edit-team-container'>
-            <div className='team-id'><h2>Task: {teamInfo.teamId}</h2></div>
+            <div className='team-id'><h2>{teamInfo.teamId}</h2></div>
             <div className='team-content'>
                 <div>
                     <h2>Team name: </h2>
@@ -99,13 +117,13 @@ function EditTeam({teamInfo}: editTeamProps): ReactNode{
                 </div>
                 <div>
                     <h2>Team description: </h2>
-                    <Input type="text" width="500px" value={teamInfoData.teamDescription} onChange={handleChangeTeamDescription}/>
+                    <textarea className='textarea-input' value={teamInfoData.teamDescription || ''} onChange={handleChangeTeamDescription}></textarea>
                 </div>
                 <div>
                     <div className="users">
                         <div>
                             <h2>All users:</h2>
-                            <ul style={{border: '1px solid black', padding: '10px', width:'200px', height:'100px'}}>
+                            <ul>
                                 {allUsers.map((user,index)=>(
                                     <li key={index}  onClick={(event) => handleUserClick(event.currentTarget)}>{user}</li>
                                 ))}
@@ -117,7 +135,7 @@ function EditTeam({teamInfo}: editTeamProps): ReactNode{
                         </div>
                         <div>
                             <h2>Users in team:</h2>
-                            <ul style={{border: '1px solid black', padding: '10px', width:'200px', height:'100px'}}>
+                            <ul>
                                 {usersInGroup.map((user,index)=>(
                                     <li key={index} onClick={(event) => handleUserClick(event.currentTarget)}>{user}</li>
                                 ))}
@@ -126,7 +144,7 @@ function EditTeam({teamInfo}: editTeamProps): ReactNode{
                     </div>
                 </div>
                 <div>
-                    <Button width="500px">Save</Button>
+                    <Button width="500px" onClick={handleSaveBtn}>Save</Button>
                 </div>
             </div>
         </div>

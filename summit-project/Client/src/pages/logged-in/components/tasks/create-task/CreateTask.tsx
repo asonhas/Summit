@@ -1,27 +1,30 @@
-import { memo, ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { memo, ReactNode, useCallback, useEffect, useState } from "react";
 import { useUser } from "../../../../../contexts/User-Context";
 import CustomDatePicker from "./components/CustomDatePicker";
 import { axiosClient } from "../../../../../axios";
-import { priorityValues, taskDataType } from "../../../../../types/Types";
-import './CreateTask.css';
+import { priorityValues, taskDataType, taskType } from "../../../../../types/Types";
 import './reactDatePicker.css';
 import Utils from "../../../../../utils/Utils";
+import './CreateTask.css';
+import Input from "../../input-component/Input";
 
 interface CreateTaskProps {
     setShowCreateTask: (setShowCreateTask: boolean) => void;
+    setTasksArr: (setTasksArr: Array<taskType>) => void
 }
 
-function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
+function CreateTask({ setShowCreateTask, setTasksArr }: CreateTaskProps): ReactNode{
     const { user } = useUser();
     const [ choosedDate, setChoosedDate ] = useState<string>('');
     const [ priority, setPriority] = useState<priorityValues>('Low');
     const [ teams, setTeams ] = useState<Array<string>>([]);
     const [ assignedTo, setAssignedTo ] = useState<string>('Choose a team');
 
-    const data = useRef<taskDataType>({
+    const [data, setData ] = useState<taskDataType>({
         title: '',
         description: '',
         duedate: '',
+        statusUpdate: [],
     });
 
     useEffect(()=>{
@@ -32,22 +35,34 @@ function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
     },[]);
 
     const validateData = useCallback((): boolean => {
-        return Object.values(data.current).every((field) => field.trim().length > 0) && assignedTo != 'Choose a team';
-    }, [assignedTo]);
+        if (typeof data.title !== 'string' || data.title.trim() === '') {return false;}
+        if (typeof data.description !== 'string' || data.description.trim() === '') {return false;}
+        if (typeof data.duedate !== 'string' || data.duedate.trim() === '') {return false;}
+        if (!['Low', 'Medium', 'High'].includes(priority)) {return false;}
+        console.log(assignedTo);
+        if (typeof assignedTo !== 'string' || assignedTo.trim() === '' || assignedTo === 'Choose a team') {return false;}
+        if (!Array.isArray(data.statusUpdate) || !data.statusUpdate.every(
+            (status) =>
+                (typeof status.username === 'string' && status.username.length > 0) &&
+                (typeof status.update === 'string' && status.update.length > 0)
+            )
+        ) {return false;}
+        return true;
+    }, [assignedTo, data.description, data.duedate, data.statusUpdate, data.title, priority]);
 
     const handleSaveBtnClick = useCallback<()=> void>(async ()=>{
         try {
             if(validateData()){
                 const response = await axiosClient.put('/api/tasks/saveTask',{
-                    title: data.current.title,
-                    description: data.current.description,
+                    title: data.title,
+                    description: data.description,
                     assignedTo: assignedTo,
-                    duedate: data.current.duedate,
-                    priority,
-                    username: user?.userName,
+                    duedate: data.duedate,
+                    priority: priority,
                 })
                 if(response.status == 201){
                     Utils.customAlert('Create Task','The task was saved successfully.','warning','OK');
+                    setTasksArr([]);
                     setShowCreateTask(false);
                 }
             }else {
@@ -58,14 +73,18 @@ function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
             Utils.customAlert('Create Task','Something went wrong.','error','OK');
         }
         
-    },[assignedTo, priority, setShowCreateTask, user?.userName, validateData]);
+    },[assignedTo, data.description, data.duedate, data.priority, data.title, setShowCreateTask, setTasksArr, user?.userName, validateData]);
 
     const handleTitleChange = useCallback<(event: React.ChangeEvent<HTMLInputElement>)=> void>((event: React.ChangeEvent<HTMLInputElement>)=>{
-        data.current.title = event.target.value;
+        setData((prev)=>({
+            ...prev, title: event.target.value
+        }));
     },[]);
 
     const handleDescriptionChange = useCallback<(event: React.ChangeEvent<HTMLTextAreaElement>)=> void>((event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        data.current.description = event.target.value;
+        setData((prev)=>({
+            ...prev, description: event.target.value
+        }));
     }, []);
 
     const handleAssignedToChange = useCallback<(event: React.ChangeEvent<HTMLSelectElement>)=> void>((event: React.ChangeEvent<HTMLSelectElement>)=>{
@@ -77,8 +96,10 @@ function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
     },[]);
 
     useEffect(() => {
-        data.current.duedate = choosedDate;
-    }, [choosedDate]); // This effect will run whenever choosedDate changes.
+        setData((prev)=>({
+            ...prev, duedate: choosedDate
+        }));
+    }, [choosedDate]);
     return(
         <div className='create-task-container'>
             <div className='task-form-row'>
@@ -86,7 +107,8 @@ function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
             </div>
             <div className='task-form-row'>
                 <h3>Task title:</h3>
-                <input style={{ marginLeft: "27px" }} className='title-input' type='text' placeholder='title...' onChange={handleTitleChange} required />
+                <Input type="text" value={data.title} placeholder="title..." onChange={handleTitleChange} width="500px" marginLeft="27px" required focusEfect={true} />
+                {/*<input style={{ marginLeft: "27px" }} className='title-input' type='text' placeholder='title...' onChange={handleTitleChange} required />*/}
             </div>
             <div className='task-form-row'>
                 <h3 style={{alignSelf: 'flex-start'}}>Description: </h3>
@@ -94,7 +116,6 @@ function CreateTask({ setShowCreateTask }: CreateTaskProps): ReactNode{
             </div>
             <div className='task-form-row'>
                 <h3>Assigned to:</h3>
-                {/*<input className='title-input' type='text' placeholder='Assigned to' onChange={handleAssignedToChange} required />*/}
                 <div>
                     <select 
                         className='task-assigned-to'

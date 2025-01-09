@@ -3,20 +3,22 @@ import './AddUser.css';
 import { axiosClient } from "../../../../../axios";
 import Utils from "../../../../../utils/Utils";
 import axios from "axios";
+import { userData } from "../../../../../types/Types";
 
 interface AddUserProps {
-    setAddUser: (setAddUser: boolean) => void;
+    setShowAddUser: (setShowAddUser: boolean) => void;
+    setUsersArr: (setUsersArr:Array<userData>) => void;
 }
 
 type PermissionsValues = 'regular' | 'administrator';
 
-function AddUder({ setAddUser }: AddUserProps):ReactNode{
+function AddUder({ setShowAddUser, setUsersArr }: AddUserProps):ReactNode{
     const [ permissions, setPermissions] = useState<PermissionsValues>('regular');
     useEffect(()=>{
-        setAddUser(true);
+        setShowAddUser(true);
         const authenticatorDiv = document.getElementById('authenticator-div') as HTMLDivElement;
         authenticatorDiv.style.display = 'none';
-    },[setAddUser]);
+    },[setShowAddUser]);
 
     const addUser = useCallback(async () =>{
         try {
@@ -71,17 +73,9 @@ function AddUder({ setAddUser }: AddUserProps):ReactNode{
     const handleSaveUser = useCallback(async ()=>{
         const addUserReturndValues = await addUser();
         if(addUserReturndValues && addUserReturndValues.secret.length > 0){
-            const addUserDiv = document.querySelector('.add-user-div') as HTMLDivElement;
-            addUserDiv.style.height = '730px';
-            const authenticatorDiv = document.getElementById('authenticator-div') as HTMLDivElement;
-            authenticatorDiv.style.display = 'flex';
-            // disable save btn
-            const saveBtn = document.querySelector('.save-btn') as HTMLDivElement;
-            saveBtn.style.pointerEvents = 'none';
-            saveBtn.style.opacity = '0.6';
-            // make all inputs read only
-            const qrImg = document.getElementById('qrImg') as HTMLImageElement;
-            qrImg.src = addUserReturndValues.secret;
+            setShowAddUser(false);
+            setUsersArr([]);
+            Utils.customAlertWithImage('Add user','Google authenticator QR Code',addUserReturndValues.secret,'Close',300,300,'QR Code');
         }else{
             if(addUserReturndValues && addUserReturndValues.conflict.length > 0){
                 Utils.customAlert('Error add user',`Adding the user failed because: ${addUserReturndValues.conflict}`,'info','Close');
@@ -89,7 +83,7 @@ function AddUder({ setAddUser }: AddUserProps):ReactNode{
                 Utils.customAlert('Error add user','Adding the user failed.','info','Close');
             }
         }
-    },[addUser]);
+    },[addUser, setShowAddUser, setUsersArr]);
     return(
         <div className="table">
             <div className="row">

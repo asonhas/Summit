@@ -22,6 +22,26 @@ export default class Utils{
         });
     }
 
+    static customAlertWithImage(
+        title: string, 
+        text: string, 
+        imageUrl: string, 
+        confirmButtonText: string,
+        imageWidth?: string | number,
+        imageHeight?: string | number,
+        imageAlt?: string,
+    ){
+        Swal.fire({
+            title,
+            text,
+            imageUrl, // Replace with your image URL
+            imageWidth: imageWidth ?? 150,
+            imageHeight: imageHeight ?? 150,
+            imageAlt: imageAlt ?? undefined,
+            confirmButtonText,
+        });
+    }
+
     static parseJwt (token: string) { 
         try {
             const base64Url = token.split('.')[1];

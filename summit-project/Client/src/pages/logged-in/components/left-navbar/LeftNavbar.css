@@ -4,6 +4,7 @@
     width: 200px; /* Fixed width */
     background-color: #222d31;
     height: 100% /* Stretch to fill parent container */;
+    min-height: fit-content ;
 }
 
 .leftNavbarCotainer .option{
@@ -13,4 +14,8 @@
 .leftNavbarCotainer .option:hover{
     background-color: #314248;
     cursor: pointer;
+}
+
+.leftNavbarCotainer .logout{
+    margin-top: auto;
 }

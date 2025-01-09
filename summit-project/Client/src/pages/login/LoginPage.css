@@ -32,27 +32,6 @@ body{
     margin-bottom: 20px;
 }
 
-.backGround .login-container input {
-    max-width: 100%;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.backGround .login-container button {
-    max-width: 100%;
-    width: 100%;
-    padding: 10px;
-    background-color: #717070;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
 .backGround .login-container button:hover {
     background-color: #6b6b6b;
 }

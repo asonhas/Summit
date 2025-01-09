@@ -14,7 +14,8 @@ const tasksSchema = new Schema({
           update: { type: String, required: true },
           timestamp: { type: Date, default: Date.now } 
       }
-    ]
+    ],
+    status: {type: String},
   });
   
   export const TasksModel = model('tasks', tasksSchema);

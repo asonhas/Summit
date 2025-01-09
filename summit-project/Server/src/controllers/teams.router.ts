@@ -100,4 +100,26 @@ teamsRouter.delete('/delete/',authMiddleware,async(req: any, res: any)=>{
     
 });
 
+
+teamsRouter.post('/update/:teamId',authMiddleware,async (req: any, res: any)=>{
+    const { teamId } = req.params;
+    const { teamName, teamTitle, usersInTeam } = req.body;
+   
+    try {
+        const updatedTask = await teamModel.findOneAndUpdate(
+            { teamId }, // Filter
+            { teamName, teamTitle, usersInTeam }, // Update
+            { new: true } // Return the updated document
+        );
+        if (!updatedTask) {
+            return res.status(404).json({ message: "Team not found" });
+        }
+        return res.json({
+            updatedTask,
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 export default teamsRouter;

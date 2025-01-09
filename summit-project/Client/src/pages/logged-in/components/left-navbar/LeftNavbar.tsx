@@ -2,6 +2,7 @@ import { memo, ReactNode } from "react";
 import { useUser } from "../../../../contexts/User-Context";
 import './LeftNavbar.css';
 import { activeComponentValues } from "../../../../types/Types";
+import { useAuthContext } from "../../../../contexts/Auth-Context";
 
 interface LeftNavbarProps {
     setActiveComponent: (componentName: activeComponentValues) => void;
@@ -10,6 +11,7 @@ interface LeftNavbarProps {
 
 function LeftNavbar({ setActiveComponent, setCustomComponent }: LeftNavbarProps): ReactNode{
     const { user } = useUser();
+    const { logout } = useAuthContext();
     return(
         <div className='leftNavbarCotainer'>
             <div className='option' onClick={() => {
@@ -36,6 +38,7 @@ function LeftNavbar({ setActiveComponent, setCustomComponent }: LeftNavbarProps)
                 setActiveComponent('Users');
                 setCustomComponent(null);
             }}>Users</div> : undefined}
+            <div className='option logout' onClick={logout}>Lpgout</div>
         </div>
     );
 }

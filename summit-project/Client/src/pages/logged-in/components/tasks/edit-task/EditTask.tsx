@@ -3,7 +3,7 @@ import './EditTask.css';
 import { axiosClient } from "../../../../../axios";
 import Input from "../../input-component/Input";
 import CustomDatePicker from "../create-task/components/CustomDatePicker";
-import { priorityValues, taskDataType } from "../../../../../types/Types";
+import { priorityValues, statusValues, taskDataType } from "../../../../../types/Types";
 import Button from "../../button-component/Button";
 import Utils from "../../../../../utils/Utils";
 import axios from "axios";
@@ -12,20 +12,29 @@ interface editTaskProps {
     taskId: string;
 }
 function EditTask({taskId}: editTaskProps): ReactNode{
+    const [ teams, setTeams ] = useState<Array<string>>([]);
     const [taskData, setTaskData] = useState<taskDataType>({
         title: '',
         description: '',
         duedate: '',
         priority: '',
         statusUpdate: [],
+        assignedTo: '',
+        status: '',
     });
     const update = useRef<string>("");
     const fetchData = useRef<boolean>(true);
     useEffect(()=>{
+        axiosClient.post('/api/teams/list-teams')
+        .then((result)=>{
+            setTeams(result.data.teams);
+        });
+    },[]);
+    useEffect(()=>{
         const fetchTask = async ()=>{
             if((taskId && typeof taskId == 'string') ){
                 try {
-                    const result = await axiosClient.post(`/api/tasks/${taskId}`)   
+                    const result = await axiosClient.post(`/api/tasks/${taskId}`)
                     if(result){
                         setTaskData({
                             title: result.data.filteredTaskFields.title,
@@ -33,6 +42,8 @@ function EditTask({taskId}: editTaskProps): ReactNode{
                             duedate: result.data.filteredTaskFields.duedate,
                             priority: result.data.filteredTaskFields.priority,
                             statusUpdate: result.data.filteredTaskFields.statusUpdate,
+                            assignedTo: result.data.filteredTaskFields.assignedTo,
+                            status: result.data.filteredTaskFields.status,
                         });
                     }
                 } catch (error) {
@@ -59,6 +70,13 @@ function EditTask({taskId}: editTaskProps): ReactNode{
             priority: event.target.value as priorityValues,
         }));
     },[]);
+    const handleStatusChange = useCallback<(event: React.ChangeEvent<HTMLSelectElement>)=> void>((event: React.ChangeEvent<HTMLSelectElement>) => {
+        setTaskData((prevData) => ({
+            ...prevData,
+            status: event.target.value as statusValues,
+        }));
+    },[]);
+
 
     const handleAddUpdate = useCallback(async ()=>{
         try {
@@ -115,6 +133,14 @@ function EditTask({taskId}: editTaskProps): ReactNode{
             description: event.target.value,
         }));
     },[]);
+
+    const handleAssignedToChange = useCallback<(event: React.ChangeEvent<HTMLSelectElement>)=> void>((event: React.ChangeEvent<HTMLSelectElement>)=>{
+        setTaskData((prevData) => ({
+            ...prevData,
+            assignedTo: event.target.value,
+        }));
+    },[]);
+
     const handleUpdateTask = useCallback(async()=>{
         try {
             const response = await axiosClient.post(`/api/tasks/update/${taskId}`,{
@@ -122,6 +148,8 @@ function EditTask({taskId}: editTaskProps): ReactNode{
                 description: taskData.description,
                 duedate: taskData.duedate,
                 priority: taskData.priority,
+                status: taskData.status,
+                assignedTo: taskData.assignedTo,
             });
             if(response.status == 200){
                 return Utils.customAlert('Edit task',`Task ${taskId}  updated successfully`,'success','OK');
@@ -130,7 +158,10 @@ function EditTask({taskId}: editTaskProps): ReactNode{
             console.error(error);
             return Utils.customAlert('Edit task','Missing required data.','error','OK'); 
         }
-    },[taskData.description, taskData.duedate, taskData.priority, taskData.title, taskId]);
+    },[taskData.assignedTo, taskData.description, taskData.duedate, taskData.priority, taskData.status, taskData.title, taskId]);
+    
+    
+
     return(
         <div className='edit-task-container'>
             <div className='task-id'><h2>Task: {taskId}</h2></div>
@@ -145,6 +176,18 @@ function EditTask({taskId}: editTaskProps): ReactNode{
                         <textarea className='textarea-input' value={taskData.description || ''} onChange={handleChangeDescription}></textarea>
                     </div>
                     <div className="row">
+                        <h2>Assigned to:</h2>
+                        <select 
+                            className='task-priority'
+                            value={taskData.assignedTo}
+                            onChange={handleAssignedToChange}>
+                            <option value="Choose a team">Choose a team</option>
+                            {teams.map((team, index)=>(
+                                <option key={index} value={team}>{team}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="row">
                         <h2 style={{marginRight: '10px'}}>Due date:</h2>
                         <CustomDatePicker value={taskData.duedate} setChoosedDate={setChoosedDate} width="500px" />
                     </div>
@@ -157,7 +200,18 @@ function EditTask({taskId}: editTaskProps): ReactNode{
                             <option value='Low'>Low</option>
                             <option value='Medium'>Medium</option>
                             <option value='High'>High</option>
-                    </select>
+                        </select>
+                    </div>
+                    <div className="row">
+                        <h2 style={{marginRight: '68px'}}>Status:</h2>
+                        <select 
+                            className='task-priority'
+                            value={taskData.status}
+                            onChange={handleStatusChange}>
+                            <option value='open'>Open</option>
+                            <option value='in progress'>In progress</option>
+                            <option value='complete'>complete</option>
+                        </select>
                     </div>
                     <div className="row">
                         <Button onClick={handleUpdateTask} width="800px">Update task</Button>
@@ -176,8 +230,7 @@ function EditTask({taskId}: editTaskProps): ReactNode{
                         ))}
                     </div>
                     <div className="row last">
-                        <h2 style={{marginRight: '55px'}}>Update:</h2>
-                        <textarea id='update-textarea' className='textarea-input' onChange={handleChangeUpdate}></textarea>
+                        <textarea id='update-textarea' className='textarea-input' onChange={handleChangeUpdate} placeholder="Update.."></textarea>
                         <Button width="150px" marginLeft="10px" onClick={handleAddUpdate}>Save update</Button>
                     </div>
                 </div>

@@ -3,14 +3,15 @@ import { axiosClient } from "../../../../../axios";
 import './AddTeam.css';
 import Utils from "../../../../../utils/Utils";
 import axios from "axios";
-import { side } from "../../../../../types/Types";
+import { side, teamType } from "../../../../../types/Types";
 
 interface AddTeamProps {
     setShowCreateTask: (setShowCreateTask: boolean) => void;
+    setTeamsArr: (setTeamsArr: Array<teamType>)=> void
 }
 
 
-function AddTeam({ setShowCreateTask }: AddTeamProps): ReactNode{
+function AddTeam({ setShowCreateTask, setTeamsArr }: AddTeamProps): ReactNode{
     const users = useRef<Array<{ username: string }>>([]);
     const userToMove = useRef<string>('');
     const [ allUsers, setAllUsers ] = useState<Array<string>>([]);
@@ -96,6 +97,7 @@ function AddTeam({ setShowCreateTask }: AddTeamProps): ReactNode{
                 });
                 if(response.status == 201){
                     Utils.customAlert('Add team','The team was added successfully','success','OK');
+                    setTeamsArr([]);
                     setShowCreateTask(false);
                 }
             } catch (error) {
@@ -109,7 +111,7 @@ function AddTeam({ setShowCreateTask }: AddTeamProps): ReactNode{
         }else{
             Utils.customAlert('Add team','All fields are required.','info','OK');
         }
-    },[setShowCreateTask, usersInGroup]);
+    },[setShowCreateTask, setTeamsArr, usersInGroup]);
 
     return(
         <div className="team-table">

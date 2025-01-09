@@ -8,12 +8,14 @@ import { axiosClient } from "../../../../axios";
 import Utils from "../../../../utils/Utils";
 import axios from "axios";
 import EditTeam from "./edit-team/EditTeam";
+import { useUser } from "../../../../contexts/User-Context";
 
 interface teamsProps {
     setCustomComponent: (component: ReactNode | null) => void;
 }
 
 function Teams({ setCustomComponent }: teamsProps): ReactNode{
+    const { user } = useUser();
     const [showAddTeam, setShowAddTeam] = useState<boolean>(false);
     const [teamsArr, setTeamsArr] = useState<Array<teamType>>([]);
 
@@ -66,46 +68,47 @@ function Teams({ setCustomComponent }: teamsProps): ReactNode{
     },[]);
 
     const handleDeleteTeam = useCallback(async (event: React.MouseEvent<HTMLImageElement>)=>{
-        const parentElement = event.currentTarget.parentElement as HTMLDivElement;
-        if(parentElement){
-            const spanElements = Array.from(parentElement.querySelectorAll('span'));
-            if(spanElements){
-                const teamToDelete = spanElements[0].innerText;
-                if(typeof teamToDelete == 'string' && teamToDelete.length >0){
-                    Utils.customAlert2Fa().then(async (result) => {
-                        if (result.isConfirmed) {
-                            try {
-                                const response = await axiosClient.delete('/api/teams/delete',{
-                                    data: { teamToDelete, tokentoVerify: result.value},
-                                });
-                                if (response && response.status === 200) {
-                                    Utils.customAlert('Delete team',`Team ${teamToDelete} is successfuly deleted`,'success','OK');
-                                    setTeamsArr([]); 
-                                }
-                            } catch (error) {
-                                if(axios.isAxiosError(error)){
-                                    if(error.response){
-                                        if (error.response.status === 401) {
-                                            return Utils.customAlert('Delete user','Token verification failed.','error','OK');        
-                                        } 
-                                        if (error.response.status === 400) {
-                                            return Utils.customAlert('Delete user','Missing required fields.','error','OK');        
-                                        }
-                                        if(error.response?.status === 403){
-                                            return Utils.customAlert('Delete Team','You do not have permission to perform the requested action','error','OK');
+        if(user && user.permissions == 'administrator'){
+            const parentElement = event.currentTarget.parentElement as HTMLDivElement;
+            if(parentElement){
+                const spanElements = Array.from(parentElement.querySelectorAll('span'));
+                if(spanElements){
+                    const teamToDelete = spanElements[0].innerText;
+                    if(typeof teamToDelete == 'string' && teamToDelete.length >0){
+                        Utils.customAlert2Fa().then(async (result) => {
+                            if (result.isConfirmed) {
+                                try {
+                                    const response = await axiosClient.delete('/api/teams/delete',{
+                                        data: { teamToDelete, tokentoVerify: result.value},
+                                    });
+                                    if (response && response.status === 200) {
+                                        Utils.customAlert('Delete team',`Team ${teamToDelete} is successfuly deleted`,'success','OK');
+                                        setTeamsArr([]); 
+                                    }
+                                } catch (error) {
+                                    if(axios.isAxiosError(error)){
+                                        if(error.response){
+                                            if (error.response.status === 401) {
+                                                return Utils.customAlert('Delete user','Token verification failed.','error','OK');        
+                                            } 
+                                            if (error.response.status === 400) {
+                                                return Utils.customAlert('Delete user','Missing required fields.','error','OK');        
+                                            }
+                                            if(error.response?.status === 403){
+                                                return Utils.customAlert('Delete Team','You do not have permission to perform the requested action','error','OK');
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                    });   
+                        });   
+                    }
                 }
             }
+        }else{
+            Utils.customAlert('Delete Team','You do not have the necessary permissions to delete this team. Please contact your team administrator','info','OK');
         }
-        
-
-        
-    },[]);
+    },[user]);
 
     const handleEditTeam = useCallback((event: React.MouseEvent<HTMLDivElement>)=>{
         const row = (event.target as HTMLElement).parentElement;
@@ -135,7 +138,7 @@ function Teams({ setCustomComponent }: teamsProps): ReactNode{
                             <div className='close-window' onClick={() => setShowAddTeam(false)}>X</div>
                         </div>
                         <div className='add-team-content'>
-                            <AddTeam setShowCreateTask={setShowAddTeam} />
+                            <AddTeam setShowCreateTask={setShowAddTeam} setTeamsArr={setTeamsArr} />
                         </div>
                     </div>
                 </div>

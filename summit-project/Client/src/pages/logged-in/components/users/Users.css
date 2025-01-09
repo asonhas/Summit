@@ -15,9 +15,22 @@ html, body {
     flex-direction: column;
     flex-wrap: nowrap; /* Prevent wrapping */
     width: 100%;
-    height: 100%;
     position: relative;
     box-sizing: border-box;
+    align-self: flex-start;
+}
+
+.users-container .users-data{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    width: 100%;
+    height: fit-content;
+    max-height: 600px;
+    position: relative;
+    box-sizing: border-box;
+    align-self: flex-start;
+    margin-bottom: 20px;
 }
 
 .users-container .add-user {
@@ -26,6 +39,8 @@ html, body {
     align-self: flex-start;
     border-bottom: 2px solid black;
     width: 100%;
+    min-height: 80px;
+    overflow-y: hidden;
 }
 
 .users-container .add-user h1 {
@@ -190,4 +205,26 @@ html, body {
     flex-direction: column; 
     padding: 10px;
     margin-top: 10px;
+}
+
+.users-container .edit-user-container{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 500px;
+    min-height: fit-content;
+}
+.users-container .edit-user-container .reset-pass-row{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.users-container .edit-user-container .reset-pass-row h3{
+    min-width: 180px;
+}
+.users-container .edit-user-container .reset-pass-row h3:hover{
+    cursor: default;
+    color: black;
 }

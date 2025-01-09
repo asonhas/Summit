@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useLayoutEffect, useMemo } from 'react';
 import { useUser } from './User-Context';
 import { axiosClient } from '../axios';
+import axios from 'axios';
 
 type AuthContextType = {
     logout?: () => void;
@@ -8,23 +9,29 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({});
 
 function AuthProvider({ children }: { children: ReactNode }){
-    const { user, setUser: dispatchUserContext } = useUser();
-
+    const { user, setUser } = useUser();
     const logout = useCallback(async () => {
-      /*try {
-        await axiosClient.post('/api/users/logout'); // make api call to /logout
-      } catch(err) {
-        console.log('logout api call error: ', err);
+      try {
+        const response = await axiosClient.post('/api/users/logout');
+        if(response.status === 200){
+          sessionStorage.removeItem('userData');
+          sessionStorage.removeItem('isLoggedIn');
+        }  
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+          sessionStorage.removeItem('userData');
+          sessionStorage.removeItem('isLoggedIn');
+        }
       }
-      // clear accessToken & refreshToken
-      window.localStorage.removeItem('accessToken');
-      window.localStorage.removeItem('refreshToken');
-      window.localStorage.removeItem('isLoggedIn');
-  
-      dispatchUserContext?.(null); // clear user-context
-  
-      window.location.pathname = '/login' // navigate /login page*/
-    }, []);
+      setUser({
+        email: '',
+        firstName: '',
+        lastName: '',
+        permissions: '',
+        userName: '',
+        isLoggedIn: false,
+      })
+    }, [setUser]);
     
     // create state for the AuthProvider context, the state will include the logout function
     const authContextData: AuthContextType = useMemo(() => ({
@@ -33,22 +40,31 @@ function AuthProvider({ children }: { children: ReactNode }){
 
 
     useLayoutEffect(() => {
-        const requestInterceptor = axiosClient.interceptors.request.use((req) => {
-            if (req.method === 'post' || req.method === 'put' || req.method === 'delete') {
-                req.data = {
-                    // Preserve existing data
-                    ...req.data, 
-                    // Add custom property
-                    username: user?.userName, 
-                    token: sessionStorage.getItem('userData'),
-                };
-            }
-            return req; // Return the modified request configuration
-        });
-        return () => {
-            axiosClient.interceptors.request.eject(requestInterceptor);
-        };
-    }, [user?.userName]);
+      const requestInterceptor = axiosClient.interceptors.request.use((req) => {
+        if (req.method === 'post' || req.method === 'put' || req.method === 'delete') {
+          req.data = {
+            // Preserve existing data
+            ...req.data, 
+            token: sessionStorage.getItem('userData'),
+            };
+        }
+        return req; // Return the modified request configuration
+      });
+      
+      const responseInterceptor = axiosClient.interceptors.response.use((response) => response, // Pass through successful responses
+        (error) => {
+          if (axios.isAxiosError(error) && error.response?.status === 401) {
+            logout();
+          }
+          return Promise.reject(error); // Reject the promise with the error
+        }
+      );
+
+      return () => {
+        axiosClient.interceptors.request.eject(requestInterceptor);
+        axiosClient.interceptors.response.eject(responseInterceptor);
+      };
+    }, [logout, user?.userName]);
 
     return (
         <AuthContext.Provider value={authContextData}>

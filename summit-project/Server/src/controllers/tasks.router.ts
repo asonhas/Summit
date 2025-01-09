@@ -27,6 +27,7 @@ tasksRouter.put('/saveTask',authMiddleware,async (req: any, res: any)=>{
             priority,
             userName: (req as any).userName,
             statusUpdate: [],
+            status: 'open'
         });
         await newTask.save();
         res.status(201).json({ message: 'Task saved successfully' });
@@ -37,12 +38,12 @@ tasksRouter.put('/saveTask',authMiddleware,async (req: any, res: any)=>{
 
 tasksRouter.post('/update/:taskId',authMiddleware,async (req: any, res: any)=>{
     const { taskId } = req.params;
-    const { title, description, duedate, priority } = req.body;
+    const { title, description, duedate, priority, status, assignedTo } = req.body;
    
     try {
         const updatedTask = await TasksModel.findOneAndUpdate(
             { taskId }, // Filter
-            { title, description, duedate, priority }, // Update
+            { title, description, duedate, priority, status, assignedTo }, // Update
             { new: true } // Return the updated document
         );
         if (!updatedTask) {
@@ -78,7 +79,7 @@ tasksRouter.post('/',authMiddleware,async (req: any,res: any)=>{
 
 tasksRouter.delete('/delete/',authMiddleware,async(req: any, res: any)=>{
     const userPermissions: string = (req as any).permissions as string;
-    if(typeof userPermissions == 'string' && userPermissions == 'administrator'){
+    if(userPermissions == 'administrator'){
         const { taskToDelete, tokentoVerify } = req.body;
         if(taskToDelete && tokentoVerify){
             const user = await UserModel.findOne({ username: (req as any).userName }) // The user who wants to delete the task
@@ -114,12 +115,6 @@ tasksRouter.post('/:taskid', authMiddleware, async (req: any, res: any) => {
                 if (Array.isArray(task.statusUpdate)) {
                     // Reverse the array
                     reversedStatusUpdate = [...task.statusUpdate].reverse();
-                } else if (typeof task.statusUpdate === 'string') {
-                    // Reverse the string
-                    reversedStatusUpdate = String(task.statusUpdate).split('').reverse().join('');
-                } else {
-                    // Handle other types (e.g., undefined, null)
-                    reversedStatusUpdate = task.statusUpdate;
                 }
 
                 const filteredTaskFields = {
@@ -128,6 +123,8 @@ tasksRouter.post('/:taskid', authMiddleware, async (req: any, res: any) => {
                     duedate: task.duedate,
                     priority: task.priority,
                     statusUpdate: reversedStatusUpdate,
+                    status: task.status,
+                    assignedTo: task.assignedTo,
                 };
 
                 return res.json({ filteredTaskFields });

@@ -66,7 +66,7 @@ html, body {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 670px; 
-    height: 430px;
+    height: 410px;
     background-color: #eceff4;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
     border-radius: 10px; 
@@ -185,7 +185,7 @@ html, body {
 
 .tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(2),
 .tasks-container .tasks-table-container .tasks-table .task-row span:nth-child(2) {
-    flex: 0 0 250px; /* Fixed width for column 2 */
+    flex: 0 0 300px; /* Fixed width for column 2 */
 }
 
 .tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(3),
@@ -195,13 +195,21 @@ html, body {
 
 .tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(4),
 .tasks-container .tasks-table-container .tasks-table .task-row span:nth-child(4) {
-    flex: 0 0 100px; /* Fixed width for column 4 */
+    flex: 0 0 200px; /* Fixed width for column 4 */
 }
 
 .tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(5),
 .tasks-container .tasks-table-container .tasks-table .task-row span:nth-child(5) {
-    flex: 0 0 500px; /* Fixed width for column 5 */
+    flex: 0 0 200px; /* Fixed width for column 5 */
     border-right: 0;
+    border-right: 1px solid black;
+}
+
+.tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(6),
+.tasks-container .tasks-table-container .tasks-table .task-row span:nth-child(6) {
+    flex: 0 0 200px; /* Fixed width for column 6 */
+    border-right: 0;
+    border-right: 1px solid black;
 }
 /*.tasks-container .tasks-table-container .tasks-table .tasks-header span:nth-child(6),
 .tasks-container .tasks-table-container .tasks-table .task-row span:nth-child(6) {

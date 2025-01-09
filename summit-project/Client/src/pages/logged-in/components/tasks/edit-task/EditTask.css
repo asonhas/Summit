@@ -61,19 +61,16 @@ body {
 .edit-task-container .task-content .last-child{
     display: flex;
     flex-direction: column;
-    gap: 10px;
     flex: 1; 
     box-sizing: border-box; /* Include padding and border in width */
-    margin: 5px;
     padding: 5px;
-    min-height: 700px;
+    min-height: 770px;
 }
 
 .edit-task-container .task-content .last-child .row{
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
-    gap: 20px;
 }
 .edit-task-container .task-content .last-child .last{
     margin-top: auto;
@@ -86,11 +83,11 @@ body {
     padding: 5px;
     position: relative;
     overflow-y: auto; 
+    gap: 10px;
 }
 
 .edit-task-container .task-content .last-child .first .updates-container{
     border-radius: 15px;
-    padding: 10px;
     background-color: #d5d5d5 ;
     overflow-y: hidden;
     min-height: fit-content;
@@ -118,6 +115,7 @@ body {
 
 .edit-task-container .task-content .last-child .row .textarea-input{
     margin-left: 3px;
+    margin-bottom: 5px;
     min-width: 500px;
     min-height: 100px;
     resize: none;
