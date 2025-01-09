@@ -224,7 +224,7 @@ usersRouter.delete('/delete/',authMiddleware,async(req: any, res: any)=>{
                         return res.status(500).json({ message: 'Internal server error' });
                     }
                 }
-                return res.status(401).json({ message: 'Token verification failed' });
+                return res.status(404).json({ message: 'Token verification failed' });
             }
         } 
         return res.status(400).json({ message: 'Missing required fields' });
@@ -235,31 +235,54 @@ usersRouter.delete('/delete/',authMiddleware,async(req: any, res: any)=>{
 
 usersRouter.post('/update/:username',authMiddleware,async (req: any, res: any)=>{
     const { username } = req.params;
-    console.log('usedrID:',username);
-    const { password } = req.body;
-   
-    try {
-        const Password =  await hashedPassword(password);
-        const result: set2faType | undefined = await set2fa();
-        if(Password && result){
-            const user = await UserModel.findOneAndUpdate(
-                { username }, // Filter
-                { password: Password, secret2fa: result.secret.base32 }, // Update
-                { new: true } // Return the updated document
-            );
-            if (!user) {
-                return res.status(404).json({ message: "User not found" });
+    const { password, firstName, lastName, email, permissions } = req.body;
+    if(password && String(password).length > 0){
+        console.log('in password');
+        try {
+            const Password =  await hashedPassword(password);
+            const result: set2faType | undefined = await set2fa();
+            if(Password && result){
+                const user = await UserModel.findOneAndUpdate(
+                    { username }, // Filter
+                    { password: Password, secret2fa: result.secret.base32 }, // Update
+                    { new: true } // Return the updated document
+                );
+                if (!user) {
+                    return res.status(404).json({ message: "User not found" });
+                }
+                return res.json({
+                    message: 'The request has been processed.',
+                    qrCode: result.qrCode,
+                });
+            }else{
+                return res.status(400).json({ message: 'The request is malformed or invalid.' });
             }
-            return res.json({
-                message: 'The request has been processed.',
-                qrCode: result.qrCode,
-            });
-        }else{
+        } catch (error) {
             return res.status(500).json({ message: 'Internal server error' });
         }
-    } catch (error) {
-        return res.status(500).json({ message: 'Internal server error' });
+    }else{
+        if(firstName && lastName && email && permissions){
+            console.log('in user info');
+            try {
+                const user = await UserModel.findOneAndUpdate(
+                    { username }, // Filter
+                    { firstName, lastName, email, permissions }, // Update
+                    { new: true } // Return the updated document
+                );
+                if (!user) {
+                    return res.status(404).json({ message: "User not found" });
+                }
+                return res.json({
+                    message: 'The request has been processed.',
+                });
+            } catch (error) {
+                return res.status(500).json({ message: 'Internal server error' }); 
+            }
+        }else{
+            return res.status(400).json({ message: 'The request is malformed or invalid.' });
+        }
     }
+    
 });
 
 export default usersRouter;

@@ -4,6 +4,8 @@ import './AddTeam.css';
 import Utils from "../../../../../utils/Utils";
 import axios from "axios";
 import { side, teamType } from "../../../../../types/Types";
+import Input from "../../input-component/Input";
+import Button from "../../button-component/Button";
 
 interface AddTeamProps {
     setShowCreateTask: (setShowCreateTask: boolean) => void;
@@ -17,7 +19,7 @@ function AddTeam({ setShowCreateTask, setTeamsArr }: AddTeamProps): ReactNode{
     const [ allUsers, setAllUsers ] = useState<Array<string>>([]);
     const [ usersInGroup, setUsersInGroup ] = useState<Array<string>>([]);
 
-    const teamInfo = useRef({
+    const [ teamInfo, setTeamInfo ] = useState({
         name: '',
         title: '',
     });
@@ -80,19 +82,19 @@ function AddTeam({ setShowCreateTask, setTeamsArr }: AddTeamProps): ReactNode{
 
     const handleInputChange = useCallback((field: string, element: HTMLInputElement)=>{
         if(field == 'name'){
-            teamInfo.current.name = element.value;
+            setTeamInfo((prev)=> ({...prev, name: element.value}));
         }
         if(field == 'title'){
-            teamInfo.current.title = element.value;
+            setTeamInfo((prev)=> ({...prev, title: element.value}));
         }
     },[]);
 
     const handleSaveBtnClick = useCallback(async ()=>{
-        if(teamInfo.current.name.length >0 && teamInfo.current.title.length >0 && usersInGroup.length > 0){
+        if(teamInfo.name.length >0 && teamInfo.title.length >0 && usersInGroup.length > 0){
             try {
                 const response = await axiosClient.put('/api/teams/saveTeam',{
-                    teamName: teamInfo.current.name,
-                    teamTitle: teamInfo.current.title,
+                    teamName: teamInfo.name,
+                    teamTitle: teamInfo.title,
                     usersInTeam: usersInGroup.join(),
                 });
                 if(response.status == 201){
@@ -111,17 +113,17 @@ function AddTeam({ setShowCreateTask, setTeamsArr }: AddTeamProps): ReactNode{
         }else{
             Utils.customAlert('Add team','All fields are required.','info','OK');
         }
-    },[setShowCreateTask, setTeamsArr, usersInGroup]);
+    },[setShowCreateTask, setTeamsArr, teamInfo.name, teamInfo.title, usersInGroup]);
 
     return(
         <div className="team-table">
             <div className="team-row">
                 <div className="team-cell"><h3>Team name:</h3></div>
-                <div className="team-cell"><input type="text" id='team-name' onChange={(element)=> handleInputChange('name', element.currentTarget)} /></div>
+                <div className="team-cell"><Input type="text" value={teamInfo.name} height="35px" focusEfect={true} onChange={(element)=> handleInputChange('name', element.currentTarget)}></Input></div>
             </div>
             <div className="team-row">
                 <div className="team-cell"><h3>Team title:</h3></div>
-                <div className="team-cell"><input type="text" id='team-title'onChange={(element)=> handleInputChange('title', element.currentTarget)} /></div>
+                <div className="team-cell"><Input type="text" value={teamInfo.title} height="35px" onChange={(element)=> handleInputChange('title', element.currentTarget)} /></div>
             </div>
             <div className="team-row" style={{height: '210px'}}>
                 <div className='users'>
@@ -150,7 +152,7 @@ function AddTeam({ setShowCreateTask, setTeamsArr }: AddTeamProps): ReactNode{
                 </div>
             </div>
             <div className="team-row">
-                <div className="team-cell save-btn" onClick={handleSaveBtnClick}><span>save</span></div>
+                <Button width="100%" onClick={handleSaveBtnClick}>save</Button>
             </div>
         </div>
     );

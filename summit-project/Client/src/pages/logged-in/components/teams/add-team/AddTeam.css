@@ -56,12 +56,20 @@
 .team-table .team-row .team-cell h3 {
     margin-left: 5px;
 }
+.team-table .team-row .team-cell h3:hover{
+    cursor: default;
+    color: black;
+}
 
 .team-table .team-row .users{
     width: 300px;
     padding: 10px;
     display: flex; 
     flex-direction: column;
+}
+.team-table .team-row .users h3:hover{
+    cursor: default;
+    color: black;
 }
 .team-table .team-row .users .users-box{
     border: 1px solid black; 

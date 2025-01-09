@@ -209,22 +209,38 @@ html, body {
 
 .users-container .edit-user-container{
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: 500px;
+    gap: 50px; 
+    max-width: 100%; 
     min-height: fit-content;
+    align-items: flex-start; 
+    justify-content: flex-start;
 }
-.users-container .edit-user-container .reset-pass-row{
+
+.users-container .edit-user-container div{
+    min-width: 550px;
+}
+
+.users-container .edit-user-container .reset-pass{
+    display: flex;
+    flex-direction: column;
+    min-height: 340px;
+}
+
+.users-container .edit-user-container .row{
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 10px;
     margin-bottom: 20px;
 }
-.users-container .edit-user-container .reset-pass-row h3{
-    min-width: 180px;
-}
-.users-container .edit-user-container .reset-pass-row h3:hover{
+.users-container .edit-user-container .row h3:hover{
     cursor: default;
     color: black;
+}
+
+.users-container .edit-user-container .row .permissions{
+    height: 35px;
+    width: 300px;
+    border-radius: 7px;
+    padding: 5px;
 }

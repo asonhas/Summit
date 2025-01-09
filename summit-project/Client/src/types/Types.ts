@@ -27,8 +27,8 @@ export type teamType = {
 export type priorityValues =  'Low' | 'Medium' | 'High';
 export type statusValues = 'Open' | 'In progress' | 'Complete'
 export type activeComponentValues = 'Home' | 'Tasks' | 'Teams' | 'Calendar' | 'Chat' | 'Users';
-
-
+export type PermissionsValues = 'regular' | 'administrator';
+export type side = 'left' | 'right';
 
 export type statusArrayType = {
     username: string,
@@ -53,10 +53,26 @@ export type teamInfoType = {
     teamMembers: string;
 };
 
-export type side = 'left' | 'right';
-
 export type userCredentials = {
     username: string;
     password: string;
     otp?: string;
 };
+
+export type newUser = {
+    firstName: string,
+    lastName: string,
+    email: string,
+    username: string,
+    password: string,
+    repeatPassword: string,
+    Permissions: PermissionsValues,
+}
+
+export type editUserValues = {
+    username: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    Permissions: PermissionsValues,
+}

@@ -113,7 +113,7 @@ function EditTeam({teamInfo}: editTeamProps): ReactNode{
             <div className='team-content'>
                 <div>
                     <h2>Team name: </h2>
-                    <Input type="text" width="500px" value={teamInfoData.teamName} onChange={handleChangeTeamName}/>
+                    <Input type="text" width="500px" value={teamInfoData.teamName} focusEfect={true} onChange={handleChangeTeamName}/>
                 </div>
                 <div>
                     <h2>Team description: </h2>

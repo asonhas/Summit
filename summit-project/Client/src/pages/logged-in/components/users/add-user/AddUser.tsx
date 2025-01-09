@@ -1,24 +1,38 @@
-import { memo, ReactNode, useCallback, useEffect, useState } from "react";
-import './AddUser.css';
+import { memo, ReactNode, useCallback, useState } from "react";
 import { axiosClient } from "../../../../../axios";
 import Utils from "../../../../../utils/Utils";
 import axios from "axios";
-import { userData } from "../../../../../types/Types";
+import { newUser, PermissionsValues, userData } from "../../../../../types/Types";
+import './AddUser.css';
+import Input from "../../input-component/Input";
 
 interface AddUserProps {
     setShowAddUser: (setShowAddUser: boolean) => void;
     setUsersArr: (setUsersArr:Array<userData>) => void;
 }
 
-type PermissionsValues = 'regular' | 'administrator';
 
 function AddUder({ setShowAddUser, setUsersArr }: AddUserProps):ReactNode{
-    const [ permissions, setPermissions] = useState<PermissionsValues>('regular');
-    useEffect(()=>{
-        setShowAddUser(true);
-        const authenticatorDiv = document.getElementById('authenticator-div') as HTMLDivElement;
-        authenticatorDiv.style.display = 'none';
-    },[setShowAddUser]);
+    /*const [ permissions, setPermissions] = useState<PermissionsValues>('regular');*/
+    const [ newUser, setNewUser ] = useState<newUser>({
+        firstName: '',
+        lastName: '',
+        email: '',
+        username: '',
+        password: '',
+        repeatPassword: '',
+        Permissions: 'regular',
+    });
+
+    const handleInputValueChange = useCallback(
+        (input: keyof newUser, event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
+            setNewUser((prev) => ({
+                ...prev,
+                [input]: input === 'Permissions' ? (event.target.value as PermissionsValues) : event.target.value,
+            }));
+        },
+        []
+    );
 
     const addUser = useCallback(async () =>{
         try {
@@ -26,30 +40,24 @@ function AddUder({ setShowAddUser, setUsersArr }: AddUserProps):ReactNode{
                 conflict: '',
                 secret: '',
             };
-            const fNameElement = document.getElementById('fName') as HTMLInputElement;
-            const lNameElement = document.getElementById('lName') as HTMLInputElement;
-            const userNameElement = document.getElementById('userName') as HTMLInputElement;
-            const emailElement = document.getElementById('email') as HTMLInputElement;
-            const passwordElement = document.getElementById('pass') as HTMLInputElement;
-            const repeatPasswordElement = document.getElementById('repeatPass') as HTMLInputElement;
-            if(
-                (fNameElement.value.length > 0 &&
-                lNameElement.value.length > 0 &&
-                userNameElement.value.length > 0 &&
-                emailElement.value.length > 0 &&
-                passwordElement.value.length > 0 &&
-                repeatPasswordElement.value.length > 0) &&(
-                    passwordElement.value == repeatPasswordElement.value
+            if(newUser &&
+                (newUser.firstName.length > 0 &&
+                newUser.lastName.length > 0 &&
+                newUser.username.length > 0 &&
+                newUser.email.length > 0 && /* write email validate function */
+                newUser.password.length > 0 &&
+                newUser.repeatPassword.length > 0) &&(
+                    newUser.password == newUser.repeatPassword
                 )
             ){
                 try {
                     const adduserResponse = await axiosClient.put('/api/users/adduser',{
-                        firstName: fNameElement.value,
-                        lastName:  lNameElement.value,
-                        newusername: userNameElement.value,
-                        email: emailElement.value,
-                        password: passwordElement.value,
-                        permissions,
+                        firstName: newUser.lastName,
+                        lastName:  newUser.lastName,
+                        newusername: newUser.username,
+                        email: newUser.email,
+                        password: newUser.password,
+                        permissions: newUser.Permissions,
                     });
                     returnedValues.secret = adduserResponse.data.qrCode;
                 } catch (error) {
@@ -64,11 +72,7 @@ function AddUder({ setShowAddUser, setUsersArr }: AddUserProps):ReactNode{
         } catch (error) {
             console.error(error);
         }
-    },[permissions]);
-
-    const handleSetPermissions = useCallback<(event: React.ChangeEvent<HTMLSelectElement>)=> void>((event: React.ChangeEvent<HTMLSelectElement>) => {
-        setPermissions(event.target.value as PermissionsValues);
-    },[]); 
+    },[newUser]);
 
     const handleSaveUser = useCallback(async ()=>{
         const addUserReturndValues = await addUser();
@@ -88,35 +92,35 @@ function AddUder({ setShowAddUser, setUsersArr }: AddUserProps):ReactNode{
         <div className="table">
             <div className="row">
                 <div className="cell"><h3>First name:</h3></div>
-                <div className="cell"><input type="text" className='add-user-input' id='fName' /></div>
+                <Input type="text" marginLeft="5px" marginTop="5px" value={newUser.firstName} width="300px" height="35px" focusEfect={true} onChange={(event)=> handleInputValueChange('firstName',event)}/>
             </div>
             <div className="row">
                 <div className="cell"><h3>Last name:</h3></div>
-                <div className="cell"><input type="text" className='add-user-input' id='lName'/></div>
+                <Input type="text" marginLeft="5px" marginTop="5px" value={newUser.lastName} width="300px" height="35px" focusEfect={true} onChange={(event)=> handleInputValueChange('lastName',event)}/>
             </div>
             <div className="row">
                 <div className="cell"><h3>E-mail:</h3></div>
-                <div className="cell"><input type="text" className='add-user-input' id='email'/></div>
+                <Input type="text" marginLeft="5px" marginTop="5px" value={newUser.email} width="300px" height="35px" focusEfect={true} onChange={(event)=> handleInputValueChange('email',event)}/>
             </div>
             <div className="row">
                 <div className="cell"><h3>Username:</h3></div>
-                <div className="cell"><input type="text" className='add-user-input' id='userName'/></div>
+                <Input type="text" marginLeft="5px" marginTop="5px" value={newUser.username} width="300px" height="35px" focusEfect={true} onChange={(event)=> handleInputValueChange('username',event)}/>
             </div>
             <div className="row">
                 <div className="cell"><h3>Password:</h3></div>
-                <div className="cell"><input type="password" className='add-user-input' id='pass'/></div>
+                <Input type="password" marginLeft="5px" marginTop="5px" value={newUser.password} width="300px" height="35px" focusEfect={true} onChange={(event)=> handleInputValueChange('password',event)}/>
             </div>
             <div className="row">
                 <div className="cell"><h3>Repeat password:</h3></div>
-                <div className="cell"><input type="password" className='add-user-input' id='repeatPass'/></div>
+                <Input type="password" marginLeft="5px" marginTop="5px" value={newUser.repeatPassword} width="300px" height="35px" focusEfect={true} onChange={(event)=> handleInputValueChange('repeatPassword',event)}/>
             </div>
             <div className="row">
                 <div className="cell"><h3>Permissions:</h3></div>
                 <div className="cell">
                     <select 
                         className='user-permissions'
-                        value={permissions}
-                        onChange={handleSetPermissions}>
+                        value={newUser.Permissions}
+                        onChange={(event)=> handleInputValueChange('Permissions',event)}>
                         <option value='regular'>regular</option>
                         <option value='administrator'>administrator</option>
                     </select>
@@ -124,10 +128,6 @@ function AddUder({ setShowAddUser, setUsersArr }: AddUserProps):ReactNode{
             </div>
             <div className="row">
                 <div className="cell save-btn" onClick={handleSaveUser}><span>save</span></div>
-            </div>
-            <div id='authenticator-div' className="row" style={{height: '260px', overflow: 'hidden'}}>
-                <div className="cell" style={{height: '70px'}}><h3>Google authenticator QR Code:</h3></div>
-                <div className="last-row"><img id='qrImg' src="" /></div>
             </div>
         </div>
     );

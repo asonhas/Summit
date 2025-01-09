@@ -4,13 +4,14 @@ interface ButtonProps {
     children: ReactNode;
     onClick?: () => void;
     width?: string;
+    height?: string;
     marginTop?: string;
     marginBottom?: string;
     marginLeft?: string;
     marginRight?: string;
 }
 
-function Button({ children, onClick, width, marginTop, marginBottom, marginLeft, marginRight }: ButtonProps): ReactNode {
+function Button({ children, onClick, width, height, marginTop, marginBottom, marginLeft, marginRight }: ButtonProps): ReactNode {
     return (
         <div
             className='btn'
@@ -20,6 +21,7 @@ function Button({ children, onClick, width, marginTop, marginBottom, marginLeft,
             onKeyDown={(e) => e.key === "Enter" && onClick?.()}
             style={{
                 width: width ? width : undefined,
+                height: height ? height : undefined,
                 marginLeft: marginLeft ? marginLeft : undefined,
                 marginTop: marginTop ? marginTop : undefined,
                 marginBottom: marginBottom ? marginBottom: undefined,

@@ -169,7 +169,7 @@ function EditTask({taskId}: editTaskProps): ReactNode{
                 <div className="first-child">
                     <div className="row">
                         <h2 style={{marginRight: '38px'}} >Task title:</h2>
-                        <Input type="text" width="500px" value={taskData.title} onChange={handleChangeTitle}/>
+                        <Input type="text" width="500px" value={taskData.title} onChange={handleChangeTitle} focusEfect={true}/>
                     </div>
                     <div className="row">
                         <h2>Description:</h2>

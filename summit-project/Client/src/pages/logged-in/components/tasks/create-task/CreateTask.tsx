@@ -73,7 +73,7 @@ function CreateTask({ setShowCreateTask, setTasksArr }: CreateTaskProps): ReactN
             Utils.customAlert('Create Task','Something went wrong.','error','OK');
         }
         
-    },[assignedTo, data.description, data.duedate, data.priority, data.title, setShowCreateTask, setTasksArr, user?.userName, validateData]);
+    },[assignedTo, data.description, data.duedate, data.title, priority, setShowCreateTask, setTasksArr, validateData]);
 
     const handleTitleChange = useCallback<(event: React.ChangeEvent<HTMLInputElement>)=> void>((event: React.ChangeEvent<HTMLInputElement>)=>{
         setData((prev)=>({

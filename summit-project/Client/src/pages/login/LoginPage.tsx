@@ -74,9 +74,9 @@ function Login(): ReactNode {
                 <h1>Summit Login</h1>
                 <img src={logo} height='200px'/>
                 <form noValidate>
-                <Input type='text' value={userCredentials.username} placeholder='Enter your username' margin='5px 0' id='uid' 
+                <Input type='text' value={userCredentials.username} placeholder='Enter your username' marginBottom='10px' marginTop='25px' 
                     onChange={(e)=> setUserCredentials((prevState)=>({...prevState, username: e.target.value}))} required />
-                <Input type='password' value={userCredentials.password} placeholder='Enter your password' margin='5px 0' id='pwd' 
+                <Input type='password' value={userCredentials.password} placeholder='Enter your password' marginBottom='15px' id='pwd' 
                     onChange={(e)=> setUserCredentials((prevState)=>({...prevState, password: e.target.value}))} required/>
                 <Button width='100%' marginTop='5px' onClick={handleLogin}>Log In</Button>
                 </form>
