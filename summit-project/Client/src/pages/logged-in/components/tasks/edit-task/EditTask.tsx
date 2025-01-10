@@ -25,7 +25,7 @@ function EditTask({taskId}: editTaskProps): ReactNode{
     const update = useRef<string>("");
     const fetchData = useRef<boolean>(true);
     useEffect(()=>{
-        axiosClient.post('/api/teams/list-teams')
+        axiosClient.get('/api/teams/list-teams/all')
         .then((result)=>{
             setTeams(result.data.teams);
         });
@@ -34,7 +34,7 @@ function EditTask({taskId}: editTaskProps): ReactNode{
         const fetchTask = async ()=>{
             if((taskId && typeof taskId == 'string') ){
                 try {
-                    const result = await axiosClient.post(`/api/tasks/${taskId}`)
+                    const result = await axiosClient.get(`/api/tasks/${taskId}`)
                     if(result){
                         setTaskData({
                             title: result.data.filteredTaskFields.title,

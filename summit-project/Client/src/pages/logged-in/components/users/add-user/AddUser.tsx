@@ -13,7 +13,6 @@ interface AddUserProps {
 
 
 function AddUder({ setShowAddUser, setUsersArr }: AddUserProps):ReactNode{
-    /*const [ permissions, setPermissions] = useState<PermissionsValues>('regular');*/
     const [ newUser, setNewUser ] = useState<newUser>({
         firstName: '',
         lastName: '',

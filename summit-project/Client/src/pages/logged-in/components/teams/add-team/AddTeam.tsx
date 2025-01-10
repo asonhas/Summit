@@ -25,7 +25,7 @@ function AddTeam({ setShowCreateTask, setTeamsArr }: AddTeamProps): ReactNode{
     });
     
     useEffect(()=>{
-        axiosClient.post('/api/users/list-users').then((response)=>{
+        axiosClient.get('/api/users/list-users').then((response)=>{
             if(response.data){
                 users.current = response.data.users;
                 const tempUsersArr: Array<string> = [];

@@ -57,7 +57,7 @@ tasksRouter.post('/update/:taskId',authMiddleware,async (req: any, res: any)=>{
     }
 });
 
-tasksRouter.post('/',authMiddleware,async (req: any,res: any)=>{
+tasksRouter.get('/',authMiddleware,async (req: any,res: any)=>{
     try {
         const userName = (req as any).userName;
         if(userName && typeof userName == 'string'){
@@ -104,7 +104,7 @@ tasksRouter.delete('/delete/',authMiddleware,async(req: any, res: any)=>{
     }
 });
 
-tasksRouter.post('/:taskid', authMiddleware, async (req: any, res: any) => {
+tasksRouter.get('/:taskid', authMiddleware, async (req: any, res: any) => {
     const { taskid } = req.params;
     if (taskid) {
         try {

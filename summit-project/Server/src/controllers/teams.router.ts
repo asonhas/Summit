@@ -2,8 +2,6 @@ import express from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import Utils from '../services/utils.services';
 import { teamModel } from '../models/teams.model';
-import tasksRouter from './tasks.router';
-import { TasksModel } from '../models/tasks.model';
 import { UserModel } from '../models/user.model';
 import { verifyToken } from '../models/auth2fa';
 
@@ -53,21 +51,30 @@ teamsRouter.post('/',authMiddleware, async (req: any,res: any)=>{
     }
 });
 
-teamsRouter.post('/list-teams',authMiddleware,async (res: any,req: any)=>{
+teamsRouter.get('/list-teams/:user',authMiddleware,async (req: any,res: any)=>{
+    const { user } = req.params;
     try {
-        // Find all teams and return only the teamName field
-        const allTeams = await teamModel.find({}, { teamName: 1, _id: 0 });
+        let allTeams;
+        if(user === 'all'){
+            // Find all teams and return only the teamName field
+            allTeams = await teamModel.find({}, { teamName: 1, _id: 0 });
+        }else{
+            allTeams = await teamModel.find(
+                { usersInTeam: { $regex: `(^|,)${user}($|,)` } }, 
+                { teamName: 1, _id: 0 }
+            );
+        }
         const teams = allTeams.map(team => team.teamName);
         if(teams){
-            return req.json({teams,});
+            return res.json({teams,});
         }else{
-            return req.json({teams: []});
-        }
-        
+            return res.json({teams: []});
+        }    
     } catch (error) {
+        console.log('in catch:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-});
+}); 
 
 teamsRouter.delete('/delete/',authMiddleware,async(req: any, res: any)=>{
     const userPermissions: string = (req as any).permissions as string;

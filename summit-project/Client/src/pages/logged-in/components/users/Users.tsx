@@ -54,9 +54,7 @@ function Users(): ReactNode{
 
         const fetchUsers = async () => {
             try {
-                const response = await axiosClient.post('/api/users/',{
-                    username:  user?.userName,
-                });
+                const response = await axiosClient.get('/api/users/');
                 if (response?.data?.usersData) {
                     setUsersArr(response.data.usersData);
                 }
@@ -282,6 +280,9 @@ function Users(): ReactNode{
                         <div className="row" style={{marginTop: 'auto'}}>
                             <Button width="100%" height="40px" onClick={habdleResetPassword}>Reset password</Button>
                         </div>
+                    </div>
+                    <div style={{minWidth: '150px'}}>
+                        <Button width="20px" minWidth="100px" onClick={()=> setShowEditUserDiv(false)}>Close</Button>
                     </div>
                 </div>
                 </form>

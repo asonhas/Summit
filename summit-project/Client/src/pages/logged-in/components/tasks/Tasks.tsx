@@ -22,12 +22,14 @@ function Tasks({ setCustomComponent }: taskProps): ReactNode {
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                const response = await axiosClient.post('/api/tasks/');
+                const response = await axiosClient.get('/api/tasks/');
                 if (response?.data?.tasks) {
                     setTasksArr(response.data.tasks);
                 }
             } catch (error) {
-                console.error(error);
+                if(axios.isAxiosError(error) && error.response?.status === 401){
+                    return;
+                }
             }
         };
         if(tasksArr.length == 0){

@@ -72,7 +72,7 @@ usersRouter.post('/logout',authMiddleware,async (req: any, res: any)=>{
     }
 });
 
-usersRouter.post('/list-users',authMiddleware,async (req: any,res: any)=>{
+usersRouter.get('/list-users',authMiddleware,async (req: any,res: any)=>{
     const allUsers = await UserModel.find();
     if(allUsers){
         const users = allUsers.map((user)=> {
@@ -85,7 +85,7 @@ usersRouter.post('/list-users',authMiddleware,async (req: any,res: any)=>{
     return res.status(500).send({ error: 'Internal server error.' }); 
 });
 
-usersRouter.post('/',authMiddleware,async (req: any,res: any)=>{
+usersRouter.get('/',authMiddleware,async (req: any,res: any)=>{
     try {
         if(String((req as any).permissions) == 'administrator'){
             const users = await UserModel.find();

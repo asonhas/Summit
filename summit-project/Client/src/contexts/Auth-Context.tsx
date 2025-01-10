@@ -41,20 +41,33 @@ function AuthProvider({ children }: { children: ReactNode }){
 
     useLayoutEffect(() => {
       const requestInterceptor = axiosClient.interceptors.request.use((req) => {
-        if (req.method === 'post' || req.method === 'put' || req.method === 'delete') {
+        const token: string = sessionStorage.getItem('userData') as string;
+        if (typeof token == 'string' && token.length > 0) {
+          req.headers.Authorization = `Bearer ${token}`;
+        }
+        
+        /*if (req.method === 'post' || req.method === 'put' || req.method === 'delete') {
           req.data = {
             // Preserve existing data
             ...req.data, 
-            token: sessionStorage.getItem('userData'),
             };
-        }
+        }*/
         return req; // Return the modified request configuration
       });
       
       const responseInterceptor = axiosClient.interceptors.response.use((response) => response, // Pass through successful responses
         (error) => {
           if (axios.isAxiosError(error) && error.response?.status === 401) {
-            logout();
+            sessionStorage.removeItem('userData');
+            sessionStorage.removeItem('isLoggedIn');
+            setUser({
+              email: '',
+              firstName: '',
+              lastName: '',
+              permissions: '',
+              userName: '',
+              isLoggedIn: false,
+            })
           }
           return Promise.reject(error); // Reject the promise with the error
         }

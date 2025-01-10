@@ -28,7 +28,8 @@ function CreateTask({ setShowCreateTask, setTasksArr }: CreateTaskProps): ReactN
     });
 
     useEffect(()=>{
-        axiosClient.post('/api/teams/list-teams')
+        const all = 'all';
+        axiosClient.get(`/api/teams/list-teams/${all}`)
         .then((result)=>{
             setTeams(result.data.teams);
         });
