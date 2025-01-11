@@ -9,7 +9,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({});
 
 function AuthProvider({ children }: { children: ReactNode }){
-    const { user, setUser } = useUser();
+    const {  setUser } = useUser();
     const logout = useCallback(async () => {
       try {
         const response = await axiosClient.post('/api/users/logout');
@@ -42,6 +42,7 @@ function AuthProvider({ children }: { children: ReactNode }){
     useLayoutEffect(() => {
       const requestInterceptor = axiosClient.interceptors.request.use((req) => {
         const token: string = sessionStorage.getItem('userData') as string;
+        
         if (typeof token == 'string' && token.length > 0) {
           req.headers.Authorization = `Bearer ${token}`;
         }
@@ -77,7 +78,7 @@ function AuthProvider({ children }: { children: ReactNode }){
         axiosClient.interceptors.request.eject(requestInterceptor);
         axiosClient.interceptors.response.eject(responseInterceptor);
       };
-    }, [logout, user?.userName]);
+    }, [logout, setUser]);
 
     return (
         <AuthContext.Provider value={authContextData}>

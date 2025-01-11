@@ -38,7 +38,10 @@ usersRouter.post('/login',async (req: any,res: any) => {
                 const token = jwt.sign(pauload, process.env.JWTPRIVATEKEY as string);
                 const sid =  uuidv4();
                 const sessionLifetime: number = parseInt(process.env.SESSIONLIFETIME as string) | 60*1000;
-                res.cookie(`${userData.username}-sid`, sid, { maxAge: sessionLifetime, httpOnly: true });
+                res.cookie(`${userData.username}-sid`, sid, {
+                    maxAge: sessionLifetime,
+                    httpOnly: true,
+                });
                 res.json({token});
                 const newSession = new SessionModel({
                     sessionId: sid, // session id

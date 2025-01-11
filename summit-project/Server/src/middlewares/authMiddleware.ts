@@ -3,14 +3,16 @@ import jwt from 'jsonwebtoken';
 import { SessionModel } from '../models/sessions.model';
 
 export const authMiddleware: express.RequestHandler = async (req: any, res: any, next) => {
-    console.log('in authMiddleware:',req.originalUrl);
+    console.log('in authMiddleware:',req.originalUrl);  
     const authorizationHeader = req.headers.authorization;
     if (typeof authorizationHeader == 'string') {
         const token = authorizationHeader.split(' ')?.[1];
         if(token){
             const userdata = jwt.verify(token,process.env.JWTPRIVATEKEY as string)
             if(typeof userdata == 'object'){
-                const sessionId = req.cookies[`${userdata.userName}-sid`];
+                let sessionId = req.cookies[`${userdata.userName}-sid`];
+                console.log('Cookie',req.cookies[`${userdata.userName}-sid`]);
+                //sessionId = 'ed5a9c84-7b4c-4baf-869c-34da07368c7f';
                 if (!sessionId) {
                     return res.status(401).send('Unauthorized! Please login again.');
                 }

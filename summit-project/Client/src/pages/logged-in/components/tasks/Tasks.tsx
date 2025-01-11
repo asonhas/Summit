@@ -27,6 +27,7 @@ function Tasks({ setCustomComponent }: taskProps): ReactNode {
                     setTasksArr(response.data.tasks);
                 }
             } catch (error) {
+                console.log(error);
                 if(axios.isAxiosError(error) && error.response?.status === 401){
                     return;
                 }
