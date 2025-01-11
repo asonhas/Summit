@@ -82,6 +82,18 @@ html, body {
 .chat-container .chat-room .message-row .send-btn {
     margin-top: auto;
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-container .chat-room .message-row .send-btn .Attachment-icon{
+    align-self: flex-end;
+    margin-bottom: 5px;
+    width: 40px; 
+    height: 40px;
+}
+.chat-container .chat-room .message-row .send-btn .Attachment-icon:hover{
+    cursor: pointer;
 }
 
 .chat-container .chat-room .messages {
@@ -152,8 +164,9 @@ html, body {
 
 .chat-container .chat-files {
     flex: 1;
-    background-color: #d9d9d9;
     padding: 5px 10px;
-    overflow-x: auto; /* Disable vertical overflow */
     max-height: 97%;
+    min-width: 150px ;
+    border: 2px solid black;
+    border-left: none;
 }

@@ -69,7 +69,7 @@ function Login(): ReactNode {
 
     return (
         <div className='backGround' >
-            <img src={backgroundImage} />
+            <img src={backgroundImage} height='100%' />
             <div className="login-container">
                 <h1>Summit Login</h1>
                 <img src={logo} height='200px'/>

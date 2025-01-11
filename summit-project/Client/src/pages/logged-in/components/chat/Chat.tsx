@@ -1,4 +1,4 @@
-import { memo, ReactNode, useCallback, useEffect, useState } from "react";
+import { memo, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useUser } from "../../../../contexts/User-Context";
 import './Chat.css';
 import { axiosClient } from "../../../../axios";
@@ -6,6 +6,7 @@ import Button from "../button-component/Button";
 import { baseUrl } from "../../../../axios";
 import { io, Socket  } from "socket.io-client";
 import axios from "axios";
+import Attachment from '../../../../assets/Attachment.png'
 
 type messageType ={
     userName: string,
@@ -19,7 +20,7 @@ function Chat(): ReactNode {
     const [ message, setMessage ] = useState<string>('');
     const [ messages, setMessages ] = useState<messageType[]>([]);
     const [ teamName, setTeamName ] = useState<string>('');
-    
+    const selectedFile = useRef<File | null>(null);
     useEffect(() => {
         if (user) {
             axiosClient.get(`/api/teams/list-teams/${user?.userName}`)
@@ -33,6 +34,7 @@ function Chat(): ReactNode {
         const messagesDiv = document.getElementById('messages') as HTMLDivElement;
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     },[messages.length]);
+
     const startChat = useCallback(async ( Team: string) => {
         if (socket) {
             // Clean up previous socket connection
@@ -88,7 +90,6 @@ function Chat(): ReactNode {
     },[startChat, teamName]);
 
     const handleSendMessage = useCallback(() => {
-        console.log(user?.userName);
         if (socket && message.trim()) {
             socket.emit('sendMessage', { 
                 message, 
@@ -98,6 +99,12 @@ function Chat(): ReactNode {
             setMessage(''); // Clear the input field
         }
     }, [message, socket, teamName, user?.userName]);
+
+    const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            selectedFile.current =  event.target.files[0];
+        }
+    },[]);
 
     return (
         <div className="chat-container"> 
@@ -129,6 +136,13 @@ function Chat(): ReactNode {
                         onChange={(event) => setMessage(event.target.value)}
                     />
                     <div className="send-btn">
+                        <input
+                            id="file-input"
+                            type="file"
+                            style={{ display: 'none' }}
+                            onChange={handleFileChange}
+                        />
+                        <img className="Attachment-icon" src={Attachment} onClick={()=> document.getElementById('file-input')?.click()}/>
                         <Button onClick={handleSendMessage}>Send</Button>
                     </div>
                 </div>

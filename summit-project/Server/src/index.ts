@@ -36,6 +36,7 @@ app.use('/api/tasks', tasksRouter);
 app.use('/api/teams', teamsRouter);
 app.use('/api/calendar', calendarRouter);
 app.use('/api/chat', messagesRouter);
+app.use('/uploads', express.static("../uploads"));
 
 // Create an HTTP server for both Express and Socket.IO
 const server = http.createServer(app);
