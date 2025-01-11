@@ -12,27 +12,29 @@ html, body {
 
 .chat-container {
     display: flex;
-    flex-wrap: nowrap; /* Prevent wrapping */
+    flex-wrap: nowrap;
     width: 100%;
-    min-height: fit-content;
+    height: 850px; /* Set fixed height for the container */
     position: relative;
     box-sizing: border-box;
     align-self: flex-start;
+    overflow: hidden; /* Prevent container overflow */
 }
 
-.chat-container .teams{
+.chat-container .teams {
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 5px 10px;
-    margin-bottom: 10px;
-    margin-top: 5px;
-    padding: 10px;
     width: 250px;
     border: 2px solid black;
+    border-right: none;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 97%; /* Ensure it respects parent height */
+    box-sizing: border-box;
 }
 
-.chat-container .teams .team{
+.chat-container .teams .team {
     text-align: center;
     padding: 5px;
     border-radius: 10px;
@@ -40,26 +42,32 @@ html, body {
     background-color: #d5d5d5;
 }
 
-.chat-container .teams .team:hover{
+.chat-container .teams .team:hover {
     background-color: #bcbbbb;
     cursor: pointer;
     font-size: large;
 }
 
-.chat-container .chat-room{
+.chat-container .chat-room {
     display: flex;
     flex-direction: column;
     flex: 0 0 65%;
     padding: 5px 10px;
-    min-height: 820px;
+    border: 2px solid black;
+    overflow: hidden;
+    max-height: 97%;
 }
+
 .chat-container .chat-room .message-row {
     display: flex;
     gap: 15px;
     width: 100%;
+    margin-top: auto;
+    overflow-y: hidden;
+    min-height: 100px;
 }
 
-.chat-container .chat-room .message-row .message{
+.chat-container .chat-room .message-row .message {
     padding: 10px;
     border-radius: 20px;
     flex: 1;
@@ -71,29 +79,81 @@ html, body {
     border: 2px solid black;
 }
 
-.chat-container .chat-room .message-row .send-btn{
+.chat-container .chat-room .message-row .send-btn {
     margin-top: auto;
     margin-bottom: 10px;
 }
 
-.chat-container .chat-room .messages{
+.chat-container .chat-room .messages {
     border: 2px solid black;
-    flex: 1;
-    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
-}
-.chat-container .chat-room .messages .messages-msg{
-    padding: 10px;
-    border: 1px solid black;
-    max-width: fit-content;
-    border-radius: 20px;
-    margin: 10px;
-    align-self: flex-end;
+    overflow-y: auto;
+    min-height: calc(100% - 120px);
+    margin-bottom: 10px;
 }
 
-.chat-container .chat-files{
+.chat-container .chat-room .messages .messages-msg {
+    padding: 10px;
+    border: 1px solid black;
+    max-width: 90%;
+    white-space: normal; /* Ensures text wraps to the next line */
+    word-wrap: break-word; /* Breaks long words to fit the container */
+    border-radius: 20px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    align-self: flex-end;
+    height: fit-content;
+}
+
+.chat-container .chat-room .messages .me-message {
+    background-color: aquamarine;
+    min-height: fit-content;
+}
+
+.chat-container .chat-room .messages .other-message {
+    background-color: gray;
+    min-height: fit-content;
+}
+
+.chat-container .chat-room .messages .messages-msg .me {
+    background-color: green;
+    color: white;
+    padding: 5px 10px;
+    width: fit-content;
+    align-self: flex-start;
+    border-radius: 25px;
+    font-weight: bold;
+    overflow-y: hidden;
+    min-height: fit-content;
+}
+
+.chat-container .chat-room .messages .messages-msg .other {
+    background-color: black;
+    color: white;
+    padding: 5px 10px;
+    width: fit-content;
+    align-self: flex-end;
+    border-radius: 25px;
+    font-size: larger;
+    font-weight: bold;
+    height: fit-content;
+    overflow-y: hidden;
+    min-height: fit-content;
+}
+
+.chat-container .chat-room .messages .messages-msg .msg-text {
+    margin: 5px 20px;
+    font-size: larger;
+    overflow-y: hidden;
+    min-height: fit-content;
+}
+
+.chat-container .chat-files {
     flex: 1;
     background-color: #d9d9d9;
     padding: 5px 10px;
+    overflow-x: auto; /* Disable vertical overflow */
+    max-height: 97%;
 }

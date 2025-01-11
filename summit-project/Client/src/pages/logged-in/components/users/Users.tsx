@@ -59,7 +59,9 @@ function Users(): ReactNode{
                     setUsersArr(response.data.usersData);
                 }
             } catch (error) {
-                console.log(error);
+                if(axios.isAxiosError(error)){
+                    return;
+                }
             }
         };
         if(usersArr.length == 0){

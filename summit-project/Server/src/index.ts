@@ -10,6 +10,7 @@ import tasksRouter from "./controllers/tasks.router";
 import teamsRouter from "./controllers/teams.router";
 import calendarRouter from "./controllers/calendar.router";
 import { initializeSocketIo } from "./socketIo/socketIo";
+import messagesRouter from "./controllers/messages.router";
 
 dotenv.config();
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/tasks', tasksRouter);
 app.use('/api/teams', teamsRouter);
 app.use('/api/calendar', calendarRouter);
+app.use('/api/chat', messagesRouter);
 
 // Create an HTTP server for both Express and Socket.IO
 const server = http.createServer(app);

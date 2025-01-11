@@ -1,5 +1,6 @@
 import { Server as SocketIOServer } from 'socket.io';
 import { Server } from 'http';
+import { MessageModel } from '../models/message.model';
 
 export function initializeSocketIo(server: Server){
     const io = new SocketIOServer(server, {
@@ -21,9 +22,21 @@ export function initializeSocketIo(server: Server){
         });
     
         // Listen for messages and broadcast them to the team chat room
-        socket.on('sendMessage', (message: string, teamName: string, userName: string) => {
+        socket.on('sendMessage', async ({ message, teamName, userName }: { message: string, teamName: string, userName: string }) => {
           console.log(`Message received from ${userName}: ${message} in team: ${teamName}`);
-          io.to(teamName).emit('receiveMessage', `${userName}: ${message}`); // Broadcast to all users in the team room
+          io.to(teamName).emit('receiveMessage', { userName, message });
+          try {
+            const newMessage ={
+              teamName,
+              userName,
+              message,
+            };
+            await MessageModel.findOneAndUpdate(
+              { teamName },
+              { $push: { messages: newMessage } },
+              { new: true, upsert: true } // upsert creates a new document if none is found
+            );
+          } catch (error) {console.log(error);}
         });
     
         // Notify the user when disconnected
