@@ -22,6 +22,25 @@ export default class Utils{
         });
     }
 
+    static async uploadFile(): Promise<File> {
+        const result = await Swal.fire({
+            title: 'Upload a file',
+            input: 'file',
+            inputAttributes: {
+                accept: '*/*', // Adjust for specific file types
+                'aria-label': 'Upload your file',
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Upload',
+            cancelButtonText: 'Cancel',
+        });
+        if (result.isConfirmed && result.value instanceof File) {
+            return result.value;
+        } else {
+            return Promise.reject(new Error('No file selected or operation cancelled.'));
+        }
+    };
+
     static customAlertWithImage(
         title: string, 
         text: string, 
@@ -42,6 +61,8 @@ export default class Utils{
         });
     }
 
+
+
     static parseJwt (token: string) { 
         try {
             const base64Url = token.split('.')[1];
@@ -56,15 +77,32 @@ export default class Utils{
         
     }
 
-    static formatDate(dateString: string): string {
-        const date = new Date(dateString);
+
+    static formatDate(dateString: string | number): string {
+        let date;
+        if(typeof dateString === 'number'){
+            date = new Date(dateString);
+        }else{
+            date = new Date(dateString);
+        }
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
         const seconds = String(date.getSeconds()).padStart(2, '0');
+        const result = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        if(result.includes('NaN')){
+            return '';
+        }
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    }
+
+    static getTimestamp(date: string): number{
+        // Convert to timestamp
+        const [day, month, year, time] = date.split(/[/ ]/);
+        const timestamp = new Date(`${year}-${month}-${day}T${time}`).getTime();
+        return timestamp;
     }
 }
 

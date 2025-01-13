@@ -11,21 +11,8 @@ const storage = multer.diskStorage({
       if (!file) {
         return;
       }
-      const lastDotIndex = file.originalname.lastIndexOf('.');
 
-      const fileName = file.originalname.slice(0, lastDotIndex);
-      const fileExtension = file.originalname.slice(lastDotIndex);
-
-      /*
-      example:
-      file.originalname:   beautiful-eyes.png
-      desired:   beautiful-eyes-12937861923.png
-      */
-
-      const fileFullName = fileName + Math.trunc(Date.now() /100) + fileExtension;
-      (req as any).fileName = fileFullName;
-
-      cb(null, fileFullName); // Append timestamp to file name
+      cb(null, file.filename); 
     }
 });
 

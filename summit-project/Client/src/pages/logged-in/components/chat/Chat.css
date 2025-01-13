@@ -51,7 +51,7 @@ html, body {
 .chat-container .chat-room {
     display: flex;
     flex-direction: column;
-    flex: 0 0 65%;
+    flex: 1;
     padding: 5px 10px;
     border: 2px solid black;
     overflow: hidden;
@@ -91,9 +91,15 @@ html, body {
     margin-bottom: 5px;
     width: 40px; 
     height: 40px;
+    pointer-events: none;
 }
 .chat-container .chat-room .message-row .send-btn .Attachment-icon:hover{
     cursor: pointer;
+}
+
+.chat-container .chat-room .message-row .send-btn .share-screen-icon{
+    width: 40px; 
+    height: 50px;
 }
 
 .chat-container .chat-room .messages {
@@ -162,11 +168,10 @@ html, body {
     min-height: fit-content;
 }
 
-.chat-container .chat-files {
-    flex: 1;
-    padding: 5px 10px;
-    max-height: 97%;
-    min-width: 150px ;
-    border: 2px solid black;
-    border-left: none;
+.chat-container .chat-room .messages .messages-msg .msg-text .link{
+    color: blue;
 }
+.chat-container .chat-room .messages .messages-msg .msg-text .link:hover{
+    cursor: pointer;
+}
+

@@ -11,6 +11,8 @@ import teamsRouter from "./controllers/teams.router";
 import calendarRouter from "./controllers/calendar.router";
 import { initializeSocketIo } from "./socketIo/socketIo";
 import messagesRouter from "./controllers/messages.router";
+import path from 'path';
+import { authMiddleware } from "./middlewares/authMiddleware";
 
 dotenv.config();
 const app = express();
@@ -36,7 +38,7 @@ app.use('/api/tasks', tasksRouter);
 app.use('/api/teams', teamsRouter);
 app.use('/api/calendar', calendarRouter);
 app.use('/api/chat', messagesRouter);
-app.use('/uploads', express.static("../uploads"));
+app.use('/uploads',authMiddleware, express.static("./uploads"));
 
 // Create an HTTP server for both Express and Socket.IO
 const server = http.createServer(app);

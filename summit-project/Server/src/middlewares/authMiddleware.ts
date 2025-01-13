@@ -12,18 +12,30 @@ export const authMiddleware: express.RequestHandler = async (req: any, res: any,
             if(typeof userdata == 'object'){
                 let sessionId = req.cookies[`${userdata.userName}-sid`];
                 console.log('Cookie',req.cookies[`${userdata.userName}-sid`]);
-                //sessionId = 'ed5a9c84-7b4c-4baf-869c-34da07368c7f';
                 if (!sessionId) {
                     return res.status(401).send('Unauthorized! Please login again.');
                 }
                 try {
-                    const session = await SessionModel.findOne({ sessionId });
+                    const sessionLifetime: number = parseInt(process.env.SESSIONLIFETIME as string);
+                    const session = await SessionModel.findOneAndUpdate(
+                        { sessionId },
+                        { expiresAt: Date.now() + sessionLifetime },
+                        { new: true ,upsert: true }
+                    );
+                    
                     if (!session) {
                         return res.status(401).send('Session expired. Please login again.');
                     }
                     (req as any).userID = session.userId; 
                     (req as any).userName = userdata.userName;
                     (req as any).permissions = userdata.permissions;
+                    console.log('username:',(req as any).userName);
+                    
+                    res.cookie(`${(req as any).userName}-sid`, sessionId, {
+                        maxAge: sessionLifetime,
+                        httpOnly: true,
+                    });
+
                     return next(); 
                 } catch (err) {
                     res.status(500).send('Internal server error.');
