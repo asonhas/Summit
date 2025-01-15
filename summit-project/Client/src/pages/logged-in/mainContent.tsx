@@ -2,7 +2,7 @@ import { memo, ReactNode, useCallback, useState } from "react";
 import Header from "./components/header/Header";
 import LeftNavbar from "./components/left-navbar/LeftNavbar";
 import Tasks from "./components/tasks/Tasks";
-import Home from "./components/home/Home";
+//import Home from "./components/home/Home";
 import Teams from "./components/teams/Teams";
 import Calendar from "./components/calendar/Calendar";
 import Chat from "./components/chat/Chat";
@@ -16,8 +16,8 @@ function MainContent(): ReactNode{
 
     const renderComponent = useCallback(()=>{
         switch (activeComponent) {
-            case 'Home':
-                return <Home />;
+            //case 'Home':
+            //    return <Home />;
             case 'Tasks':
                 return <Tasks setCustomComponent={setCustomComponent} />;
             case 'Teams':

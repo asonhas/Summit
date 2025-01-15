@@ -59,9 +59,14 @@ function Teams({ setCustomComponent }: teamsProps): ReactNode{
         }
     },[teamsArr.length]);
 
-    const handleCreateTaskClick = useCallback(()=>{
-        setShowAddTeam(true);
-    },[]);
+    const handleCreateTeamClick = useCallback(()=>{
+        if(user?.permissions == 'administrator')
+        {
+            setShowAddTeam(true);
+        }else{
+            Utils.customAlert('Add Team', 'You do not have permissions to add a team.','info','Close');
+        }
+    },[user?.permissions]);
 
     const handleRefresh = useCallback(()=>{
         setTeamsArr([]);
@@ -113,22 +118,26 @@ function Teams({ setCustomComponent }: teamsProps): ReactNode{
     const handleEditTeam = useCallback((event: React.MouseEvent<HTMLDivElement>)=>{
         const row = (event.target as HTMLElement).parentElement;
         if(row){
-            const teamRow = row.querySelectorAll('span') as NodeListOf<HTMLSpanElement>;
-            const teamInfo: teamInfoType = {
-                teamId: teamRow[0].innerText,
-                teamName: teamRow[1].innerText,
-                teamDescription: teamRow[2].innerText,
-                teamMembers: teamRow[3].innerText,
-            };
-            setCustomComponent(<EditTeam teamInfo={teamInfo} />);
+            if(user?.permissions == 'administrator')
+            {
+                const teamRow = row.querySelectorAll('span') as NodeListOf<HTMLSpanElement>;
+                const teamInfo: teamInfoType = {
+                    teamId: teamRow[0].innerText,
+                    teamName: teamRow[1].innerText,
+                    teamDescription: teamRow[2].innerText,
+                    teamMembers: teamRow[3].innerText,
+                };
+                setCustomComponent(<EditTeam teamInfo={teamInfo} />);
+            }else{
+                Utils.customAlert('Delete team','You do not have permissions to edit or delete team','info','Close' );
+            }
         }
-        
-    },[setCustomComponent]);
+    },[setCustomComponent, user?.permissions]);
 
     return(
         <div className='teams-container'>
             <div className='add-team'>
-                <h1 onClick={handleCreateTaskClick}>+ Add team</h1>
+                <h1 onClick={handleCreateTeamClick}>+ Add team</h1>
             </div>
             {showAddTeam &&
                 <div className='add-team-background'>

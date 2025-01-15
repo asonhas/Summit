@@ -65,8 +65,13 @@ function Tasks({ setCustomComponent }: taskProps): ReactNode {
     }, [tasksArr.length, user?.userName]);
 
     const handleCreateTaskClick = useCallback(() => {
-        setShowCreateTask(true);
-    }, []);
+        if(user?.permissions == 'administrator')
+        {
+            setShowCreateTask(true);
+        }else{
+            Utils.customAlert('Create task', 'You do not have permissions to create new task.','info','Close');
+        }
+    }, [user?.permissions]);
 
     const handleRefresh = useCallback(()=>{
         setTasksArr([]);

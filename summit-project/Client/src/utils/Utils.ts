@@ -104,6 +104,19 @@ export default class Utils{
         const timestamp = new Date(`${year}-${month}-${day}T${time}`).getTime();
         return timestamp;
     }
+
+    static validateEmail (value: unknown): boolean {
+        if (typeof value == 'string') {
+          const isMatch = value
+          .toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+          this.customAlert('Invalid email', 'Check that the email address is valid.','error','Close');
+          return !!isMatch;
+        }
+        return false;
+    };
 }
 
  

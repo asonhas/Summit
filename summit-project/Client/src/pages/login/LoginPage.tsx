@@ -71,7 +71,7 @@ function Login(): ReactNode {
         <div className='backGround' >
             <img src={backgroundImage} height='100%' />
             <div className="login-container">
-                <h1>Summit Login</h1>
+                <h1>Summit</h1>
                 <img src={logo} height='200px'/>
                 <form noValidate>
                 <Input type='text' value={userCredentials.username} placeholder='Enter your username' marginBottom='10px' marginTop='25px' 

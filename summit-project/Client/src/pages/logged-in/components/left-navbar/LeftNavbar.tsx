@@ -14,10 +14,10 @@ function LeftNavbar({ setActiveComponent, setCustomComponent }: LeftNavbarProps)
     const { logout } = useAuthContext();
     return(
         <div className='leftNavbarCotainer'>
-            <div className='option' onClick={() => {
+            {/*<div className='option' onClick={() => {
                 setActiveComponent('Home');
                 setCustomComponent(null);
-            }}>Home</div>
+            }}>Home</div>*/}
             <div className='option' onClick={() => {
                 setActiveComponent('Tasks');
                 setCustomComponent(null);

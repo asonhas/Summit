@@ -2,7 +2,7 @@
   "compilerOptions": {
   "target": "ES2020",
   "module": "commonjs", // Use ES module system
-  "lib": ["ES2020"], // Include standard library
+  "lib": ["ES2020", "DOM"], // Include standard library
   "outDir": "./dist", // Output directory for compiled files
   "rootDir": "./src", // Root directory of input files
   "strict": true, // Enable strict type checking options

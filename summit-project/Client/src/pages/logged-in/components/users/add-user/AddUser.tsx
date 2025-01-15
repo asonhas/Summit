@@ -38,12 +38,14 @@ function AddUder({ setShowAddUser, setUsersArr }: AddUserProps):ReactNode{
             const returnedValues = {
                 conflict: '',
                 secret: '',
+                validEmail: false,
             };
             if(newUser &&
                 (newUser.firstName.length > 0 &&
                 newUser.lastName.length > 0 &&
                 newUser.username.length > 0 &&
-                newUser.email.length > 0 && /* write email validate function */
+                newUser.email.length > 0 && 
+                Utils.validateEmail(newUser.email) &&
                 newUser.password.length > 0 &&
                 newUser.repeatPassword.length > 0) &&(
                     newUser.password == newUser.repeatPassword
@@ -59,6 +61,7 @@ function AddUder({ setShowAddUser, setUsersArr }: AddUserProps):ReactNode{
                         permissions: newUser.Permissions,
                     });
                     returnedValues.secret = adduserResponse.data.qrCode;
+                    returnedValues.validEmail = true;
                 } catch (error) {
                     if(axios.isAxiosError(error)){
                         if (error.response && error.response.status === 409) {
@@ -82,6 +85,8 @@ function AddUder({ setShowAddUser, setUsersArr }: AddUserProps):ReactNode{
         }else{
             if(addUserReturndValues && addUserReturndValues.conflict.length > 0){
                 Utils.customAlert('Error add user',`Adding the user failed because: ${addUserReturndValues.conflict}`,'info','Close');
+            }else if(! addUserReturndValues?.validEmail){
+                Utils.customAlert('Error add user','Adding the user failed because email not valid','info','Close');
             }else{
                 Utils.customAlert('Error add user','Adding the user failed.','info','Close');
             }
