@@ -75,7 +75,7 @@ usersRouter.post('/logout',authMiddleware,async (req: any, res: any)=>{
     }
 });
 
-usersRouter.get('/list-users',authMiddleware,async (req: any,res: any)=>{
+usersRouter.get('/list-users',/*authMiddlewar,*/async (req: any,res: any)=>{
     const allUsers = await UserModel.find();
     if(allUsers){
         const users = allUsers.map((user)=> {
@@ -138,7 +138,6 @@ const saveUser = async (req: any, res: any, next: any) => {
     if(String(firstName).length == 0 || String(lastName).length == 0 || String(newusername).length == 0 || String(email).length == 0 || String(password).length == 0 && String(permissions).length == 0){
         return res.status(400).send({ error: 'All fields are required.' });
     }
-
     try {
         const Password = await hashedPassword(password);
         if(Password){
@@ -189,6 +188,7 @@ const set2fa = async (): Promise<set2faType | undefined> =>{
 };
 
 usersRouter.put('/adduser',authMiddleware,saveUser,async (req: any,res: any)=>{
+    console.log('in adduser');
     try {
         const result: set2faType | undefined = await set2fa();
         if(result){

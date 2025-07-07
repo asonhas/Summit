@@ -38,7 +38,7 @@ function LeftNavbar({ setActiveComponent, setCustomComponent }: LeftNavbarProps)
                 setActiveComponent('Users');
                 setCustomComponent(null);
             }}>Users</div> : undefined}
-            <div className='option logout' onClick={logout}>Lpgout</div>
+            <div className='option logout' onClick={logout}>Logout</div>
         </div>
     );
 }

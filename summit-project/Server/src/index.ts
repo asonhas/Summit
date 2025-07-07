@@ -14,15 +14,26 @@ import { authMiddleware } from "./middlewares/authMiddleware";
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
+import Utils from "./services/utils.services";
 
 dotenv.config();
 const app = express();
 const port = 3000;
 
-const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/';
-mongoose.connect(mongoURI).then(() => {
+
+
+
+Utils.connectWithFallback().catch((err) => {
+  console.error('Unhandled MongoDB connection error:', err);
+  process.exit(1);
+});
+
+/*const mongoURI = process.env.MONGO_URI || process.env.MONGO_CONTAINER_URI;
+console.log(mongoURI)
+//const mongoURI = 'mongodb://admin:admin123@localhost:27017/test?authSource=admin'
+mongoose.connect(mongoURI as string).then(() => {
   console.log("MongoDB is connected!");
-}).catch((err) => console.error(err));
+}).catch((err) => console.error('Error5',err));*/
 
 app.use(cors({
   credentials: true, // Allow cookies
@@ -60,5 +71,5 @@ initializeSocketIo(server);
 
 // Start the server on the specified port
 server.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+  console.log(`✅ Server is listening on port ${port}`);
 });
