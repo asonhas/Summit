@@ -47,12 +47,6 @@ function AuthProvider({ children }: { children: ReactNode }){
           req.headers.Authorization = `Bearer ${token}`;
         }
         
-        /*if (req.method === 'post' || req.method === 'put' || req.method === 'delete') {
-          req.data = {
-            // Preserve existing data
-            ...req.data, 
-            };
-        }*/
         return req; // Return the modified request configuration
       });
       

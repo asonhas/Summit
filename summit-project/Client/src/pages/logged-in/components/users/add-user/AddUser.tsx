@@ -53,7 +53,7 @@ function AddUder({ setShowAddUser, setUsersArr }: AddUserProps):ReactNode{
             ){
                 try {
                     const adduserResponse = await axiosClient.put('/api/users/adduser',{
-                        firstName: newUser.lastName,
+                        firstName: newUser.firstName,
                         lastName:  newUser.lastName,
                         newusername: newUser.username,
                         email: newUser.email,

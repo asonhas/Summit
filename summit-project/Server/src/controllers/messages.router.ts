@@ -6,7 +6,7 @@ const messagesRouter = express.Router();
 
 messagesRouter.get('/:teamName',authMiddleware,async (req: any, res: any)=>{
     const { teamName } = req.params;
-    console.log('teamName',teamName);
+    //console.log('teamName',teamName);
     if (!teamName) {
         return res.status(400).json({ message: 'Team name is required' });
     }
@@ -15,7 +15,7 @@ messagesRouter.get('/:teamName',authMiddleware,async (req: any, res: any)=>{
         const result = await MessageModel.findOne({ teamName });
 
         if (result) {
-            console.log("messages:",result.messages);
+            //console.log("messages:",result.messages);
             return res.json({ result: result.messages });
         } else {
             return res.status(404).json({ message: 'No messages found for this team' });

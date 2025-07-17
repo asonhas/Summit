@@ -22,160 +22,130 @@ function Chat(): ReactNode {
     const { user } = useUser();
     const [ teams, setTeams ] = useState<Array<string>>([]);
     const [ socket, setSocket ] = useState<Socket | null>(null);
+    //const socketRef = useRef<Socket | null>(null);
     const [ message, setMessage ] = useState<string | File>('');
     const [ messages, setMessages ] = useState<messageType[]>([]);
     const [ teamName, setTeamName ] = useState<string>('');
-    //const videoRef = useRef<HTMLVideoElement>(null);
-    const remoteVideoRef = useRef<HTMLVideoElement>(null);
+    const isFirstTimeChatOpen = useRef<boolean>(true);
+    const [peer, setPeer] = useState<RTCPeerConnection | null>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    
+const startChat = useCallback(async (Team: string) => {
+        console.log('startChat:', Team);
 
+        // ניתוק והסרת האזנות מה-socket הישן
+        if (socket) {
+            socket.disconnect();
+        }
+
+        // יצירת socket חדש
+        const newSocket = io(`${baseUrl}`, { withCredentials: true });
+        setSocket(newSocket);
+        console.log('1- socket:', socket?.id);
+        
+        newSocket.on('connect', () => {
+            //console.log(`Connected to team room: ${Team}`);
+            newSocket.emit('joinRoom', Team);
+        });
+        // the socketIo server will call this function when a new message is received
+        // and it will update the messages state
+        newSocket.on('receiveMessage', ({ userName, message, dateSent, isFile }) => {
+            //console.log('receiveMessage');
+            setMessages((prevMessages) => [...prevMessages, { userName, message, dateSent, isFile }]);
+        });
+
+        
+
+        // ניקוי בעת סגירה
+        return () => {
+            newSocket.off('receiveMessage');
+            newSocket.off('webrtc-offer');
+            newSocket.off('webrtc-answer');
+            newSocket.disconnect();
+            //peerConnection.close();
+        };
+    }, []);
+
+
+    console.log('2- socket:', socket?.id);
     useEffect(() => {
         if (user) {
             axiosClient.get(`/api/teams/list-teams/${user?.userName}`)
-                .then((result) => {
-                    setTeams(result.data.teams);
-                });
+            .then((result) => {
+                setTeams(result.data.teams);
+            });
         }
     }, [user]);
     
+    // Scroll to the bottom of the messages div when messages change
+    // This effect will run whenever the messages array changes
     useEffect(()=>{
         const messagesDiv = document.getElementById('messages') as HTMLDivElement;
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     },[messages.length]);
 
-    
-// Creating and Sending an Offer
-const createOffer = useCallback(async (socket: Socket, peerConnection: RTCPeerConnection, roomId: string)=>{
-    try {
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
 
-        // Send offer to other peer via signaling server
-        socket.emit('webrtc-offer', { offer, roomId });
-        console.log('Offer sent:', offer);
-    } catch (error) {
-        console.error('Error creating offer:', error);
-    }
-},[]);
-
-// Handling and Responding with an Answer
-const handleOffer = useCallback(async (socket: Socket,peerConnection: RTCPeerConnection, offer: RTCSessionDescriptionInit, roomId: string)=>{
-    console.log('in handleOffer ');
-    try {
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-        const answer = await peerConnection.createAnswer();
-        await peerConnection.setLocalDescription(answer);
-
-        // Send answer back to the other peer via signaling server
-        socket.emit('webrtc-answer', { answer, roomId });
-        console.log('Answer sent:', answer);
-    } catch (error) {
-        console.error('Error handling offer and sending answer:', error);
-    }
-},[]);
-
-// Receiving the Answer
-const handleAnswer = useCallback(async (peerConnection: RTCPeerConnection, answer: RTCSessionDescriptionInit)=>{
-    try {
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-        
-        console.log('Answer received and set as remote description.');
-    } catch (error) {
-        console.error('Error handling answer:', error);
-    }
-},[]);
-
-const shareScreen = useCallback(async (socket: Socket, peerConnection: RTCPeerConnection, roomId: string)=>{
-    try {
-        // Capture the screen
-        const screenStream = await navigator.mediaDevices.getDisplayMedia({
-            video: true,
-        });
-
-        // Add screen stream to peer connection
-        screenStream.getTracks().forEach((track) => {
-            peerConnection.addTrack(track, screenStream);
-        });
-
-        // Create and send offer
-        await createOffer(socket, peerConnection, roomId);
-        console.log('Screen sharing started.');
-    } catch (error) {
-        console.error('Error sharing screen:', error);
-    }
-},[createOffer]);
-
-const displaySharedScreen = useCallback((peerConnection: RTCPeerConnection, videoElement: HTMLVideoElement)=>{
-    // Listen for remote stream additions
-    peerConnection.ontrack = (event) => {
-        // Ensure the remote stream is displayed on the video element
-        videoElement.srcObject = event.streams[0];
-        console.log('Displaying shared screen.');
-    };
-},[]);
-
-//const peerConnection = new RTCPeerConnection(); // add useMemo...
-const peerConnection = useMemo(()=> {return new RTCPeerConnection()},[]);
-const shareScreenBtn = useCallback(()=>{
-    // Initialize peer connection
-    if(socket){
-        shareScreen(socket, peerConnection, teamName);
-    }
-},[peerConnection, shareScreen, socket, teamName]);
-
-
-    const startChat = useCallback(async ( Team: string) => {
-        if (socket) {
-            // Clean up previous socket connection
-            socket.off('receiveMessage'); // Remove old listeners
-            socket.disconnect();
-            console.log('disconnect from room: '+ teamName);
-        }
-    
-        // Establish a new socket connection
-        const newSocket = io(`${baseUrl}`, { withCredentials: true });
-        setSocket(newSocket);
+    // start new code...
+    const startSharing = useCallback(async ()=>{
+        // Initialize peer connection
+        console.log('startSharing  called', socket);
         if(socket){
-            socket.on('connect', () => {
-                console.log(`Connected to team room: ${Team}`);
-                socket.emit('joinRoom', Team); // Join the room after connecting
-            });
-
-            // Listen for incoming messages
-            socket.on('receiveMessage', ({ userName, message, dateSent, isFile }: { userName: string, message: string, dateSent: number, isFile: boolean }) => {
-                setMessages((prevMessages) => [...prevMessages, { userName, message, dateSent, isFile }]);
-            });
+            console.log('1-shareScreenBtn:', teamName);
+            //shareScreen(socket, peerConnection, teamName);
+            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            if (videoRef.current) videoRef.current.srcObject = stream;
+            const p = new RTCPeerConnection();
+            stream.getTracks().forEach(track => p.addTrack(track, stream));
             
-
-            socket.on('webrtc-offer', async ({ offer, roomId }) => {
-                await handleOffer(newSocket, peerConnection, offer, roomId);
-            });
-    
-            socket.on('webrtc-answer', async ({ answer }) => {
-                console.log('webrtc-answer');
-                await handleAnswer(peerConnection, answer);
-                displaySharedScreen(peerConnection, remoteVideoRef.current as HTMLVideoElement);
-            });
-    
-            
-            
-
-
-            // Cleanup on component unmount
-            return () => {
-                socket.off('webrtc-offer');
-                socket.off('webrtc-answer');
-                peerConnection.close();
-                newSocket.off('receiveMessage');
-                newSocket.disconnect();
-                console.log('Disconenct');
+            p.onicecandidate = (e) => {
+                if (e.candidate) socket?.emit('ice-candidate', { roomId: teamName, candidate: e.candidate });
             };
+
+            const offer = await p.createOffer();
+            await p.setLocalDescription(offer);
+            socket?.emit('offer', { roomId: teamName, offer });
+            setPeer(p);
         }
+    },[]);
+
+    useEffect(()=>{
+        if (!socket) return;
+
+        socket.on('offer', async (offer) => {
+            const p = new RTCPeerConnection();
+            setPeer(p);
+
+            p.ontrack = (e) => {
+                if (videoRef.current) videoRef.current.srcObject = e.streams[0];
+            };
+            
+            p.onicecandidate = (e) => {
+                if (e.candidate) socket.emit('ice-candidate', { roomId: teamName, candidate: e.candidate });
+            };
+
+            await p.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await p.createAnswer();
+            await p.setLocalDescription(answer);
+            socket.emit('answer', { roomId: teamName, answer });
+        });
+
+        socket.on('answer', async (answer) => {
+            if (peer) {
+                await peer.setRemoteDescription(new RTCSessionDescription(answer));
+            }
+        });
         
-    }, [displaySharedScreen, handleAnswer, handleOffer, peerConnection, socket, teamName]);
+        socket.on('ice-candidate', async (candidate) => {
+            if (peer) await peer.addIceCandidate(new RTCIceCandidate(candidate));
+        });    
+    },[socket, teamName, peer]);
+
+
     
+
     
     const fetchChatMessages = useCallback(async(team: string)=>{
-        console.log('2- fetchChatMessages');
+        //console.log('2- fetchChatMessages');
         try {
             const result = await axiosClient.get(`/api/chat/${team}`);
             if (result) {
@@ -185,8 +155,8 @@ const shareScreenBtn = useCallback(()=>{
             if (axios.isAxiosError(error)) {
                 if (error.response) {
                     // Handle all errors except 404
-                    if (error.response.status !== 404) {
-                        console.error("No chat history for this team.. ");
+                    if (error.response.status == 404) {
+                        (`No chat history for ${team} team.. `);
                     }
                 }
             }
@@ -194,7 +164,13 @@ const shareScreenBtn = useCallback(()=>{
     },[]);
 
     const getMessagesAndStartChat = useCallback(async (event: React.MouseEvent<HTMLDivElement, MouseEvent>)=>{
+        const messagesDiv = document.getElementById('messages-area') as HTMLDivElement;
         const Team = (event.target as HTMLDivElement).innerHTML;
+        if(messagesDiv != null && Team !== teamName) {
+            messagesDiv.innerHTML = '';
+            setMessages([]); // Clear messages state
+        } 
+        
         if (Team === teamName) return; 
         setTeamName(Team); // Set the team name immediately
         // Fetch chat history for the selected team
@@ -214,7 +190,7 @@ const shareScreenBtn = useCallback(()=>{
                 userName: user?.userName,
                 isFile: false,
             });
-            console.log('1- handleSendMessage');
+            //console.log('1- handleSendMessage');
             setMessage('');
             fetchChatMessages(teamName);
         }
@@ -250,7 +226,6 @@ const shareScreenBtn = useCallback(()=>{
         let filePath = `${baseUrl}/uploads/${teamName}/`;
         filePath +=String(Utils.getTimestamp(childDivs[2].innerText) / 1000);
         filePath += '-'+element.currentTarget.innerText;
-        
         // Map file extensions to MIME types
         const mimeTypes: { [key: string]: string } = {
             '.txt': 'text/plain',
@@ -293,8 +268,21 @@ const shareScreenBtn = useCallback(()=>{
         } catch (error) {
             console.error("Error downloading file:", error);
         }
-    },[teamName]);
+    },[teamName,messages.length]);
     
+    useEffect(() =>{
+        if(teams.length >0 && isFirstTimeChatOpen.current){
+            // Automatically join the first team in the list
+            const firstTeam = teams[0];
+            setTeamName(firstTeam);
+            fetchChatMessages(firstTeam);
+            startChat(firstTeam);
+            (document.getElementById('message') as HTMLTextAreaElement).readOnly = false;
+            (document.getElementById('Attachment-icon') as HTMLImageElement).style.pointerEvents = 'auto';
+            (document.getElementById('share-screen-ico') as HTMLImageElement).style.pointerEvents = 'auto';
+            isFirstTimeChatOpen.current = false; // Set to false after the first time
+        }
+    },[teams.length]);
  
     return (
         <div className="chat-container"> 
@@ -310,7 +298,7 @@ const shareScreenBtn = useCallback(()=>{
             <div className="chat-room">
                 <div id='messages' className="messages">
                     {messages.map((msg, index) => (
-                        <div className={`messages-msg ${msg.userName == user?.userName ? 'me-message': 'other-message'}`} key={index} style={{alignSelf: msg.userName == user?.userName ? 'flex-start' : undefined}}>
+                        <div id='messages-area' className={`messages-msg ${msg.userName == user?.userName ? 'me-message': 'other-message'}`} key={index} style={{alignSelf: msg.userName == user?.userName ? 'flex-start' : undefined}}>
                             { msg.userName == user?.userName ? 
                                 <div className="me">{`${msg.userName} :`}</div> 
                                 :
@@ -340,7 +328,7 @@ const shareScreenBtn = useCallback(()=>{
                     />
                     <div className="send-btn">
                         <div>
-                            <img id='share-screen-ico'  className="share-screen-icon" src={shareScreenimg} onClick={ shareScreenBtn }/>
+                            <img id='share-screen-ico'  className="share-screen-icon" src={shareScreenimg} onClick={ startSharing }/>
                             <img id='Attachment-icon' className="Attachment-icon" src={Attachment} onClick={uploadFile}/>
                         </div>
                         <Button onClick={handleSendMessage}>Send</Button>

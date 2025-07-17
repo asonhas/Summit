@@ -6,7 +6,7 @@ import path from 'path';
 
 
 export function initializeSocketIo(server: Server){
-  //console.log('initializeSocketIo dunction: ',server);
+  console.log('initializeSocketIo dunction: ',server);
   const io = new SocketIOServer(server, {
     cors: {
       credentials: true, // Allow cookies
@@ -16,22 +16,22 @@ export function initializeSocketIo(server: Server){
     },
   });
   io.on('connection', (socket) => {
-    //console.log('A user connected:', socket.id);
+    console.log('A user connected:', socket.id);
     // User joins a team chat room
     socket.on('joinRoom', (teamName: string) => {
       socket.join(teamName);
-      //socket.emit('current-sharer');
-      //console.log(`${socket.id} joined room: ${teamName}`);
+      socket.emit('current-sharer');
+      console.log(`${socket.id} joined room: ${teamName}`);
     });
     
     // Listen for messages and broadcast them to the team chat room
     socket.on('sendMessage', async ({ message, teamName, userName, isFile }: {message: string | File, teamName: string, userName: string, isFile: boolean }) => {
       const time: number = Date.now();
       if (typeof message === 'string') {
-        //console.log(`Message received from ${userName}: ${message} in team: ${teamName}`);  
-        io.to(teamName).emit('receiveMessage', { userName, message, dateSent: time, isFile });
+        console.log(`Message received from ${userName}: ${message} in team: ${teamName}`);  
+        io.to(teamName).emit('receiveMessage', { userName, message, time });
       }else if (message && typeof message === 'object'  && 'name' in message && 'data' in message) {
-        //console.log(`File received from ${userName}: ${message.name} in team: ${teamName}`);
+        console.log(`File received from ${userName}: ${message.name} in team: ${teamName}`);
         let savedFileName;
         const base64Data = message.data as string; // Type assertion to string
         const buffer = Buffer.from(base64Data.split(",")[1], 'base64');
@@ -43,10 +43,9 @@ export function initializeSocketIo(server: Server){
         const filePath = path.join(__dirname, '../..', `uploads/${teamName}`, `${Math.floor(time / 1000)}-${message.name}`); 
         // Save file to the uploads directory
         fs.writeFileSync(filePath, buffer);
-        //console.log(`File saved at: ${filePath}`);
+        console.log(`File saved at: ${filePath}`);
         savedFileName = message.name;
-        //io.to(teamName).emit('receiveMessage', { userName, message: `File: ${message.name}`, time });
-        io.to(teamName).emit('receiveMessage', { userName, message: `${message.name}`, dateSent: time, isFile });
+        io.to(teamName).emit('receiveMessage', { userName, message: `File: ${message.name}`, time });
       
       }
       
@@ -76,24 +75,21 @@ export function initializeSocketIo(server: Server){
     });
     
     
-    /*socket.on('webrtc-offer', ({ offer, roomId }) => {
+    socket.on('webrtc-offer', ({ offer, roomId }) => {
       console.log('webrtc-offer',roomId);
       socket.to(roomId).emit('webrtc-offer', { offer });
-    });*/
+    });
     
-    /*socket.on('webrtc-answer', ({ answer, roomId }) => {
-      console.log('room:',roomId);
-      //console.log('webrtc-answer',answer);
-      socket.to(roomId).emit('webrtc-answer', { answer });
-    });*/
 
-    
-    
-    
+    socket.on('webrtc-answer', ({ answer, roomId }) => {
+      console.log('room:',roomId);
+      console.log('webrtc-answer',answer);
+      socket.to(roomId).emit('webrtc-answer', { answer });
+    });
+
     // Notify the user when disconnected
     socket.on('disconnect', () => {
-      socket.disconnect();
-      //console.log(`A user disconnected:`, socket.id);
+      console.log(`A user disconnected:`, socket.id);
     });
   });
 }

@@ -67,9 +67,10 @@ const options1 = {
 
 // Create an HTTP server for both Express and Socket.IO
 const server = https.createServer(options1,app);
-initializeSocketIo(server);
+//initializeSocketIo(server);
 
 // Start the server on the specified port
-server.listen(port, () => {
+server.listen(port, '0.0.0.0', () => {
   console.log(`✅ Server is listening on port ${port}`);
+  initializeSocketIo(server);
 });
