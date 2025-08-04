@@ -21,8 +21,8 @@ type messageType ={
 function Chat(): ReactNode {
     const { user } = useUser();
     const [ teams, setTeams ] = useState<Array<string>>([]);
-    const [ socket, setSocket ] = useState<Socket | null>(null);
-    //const socketRef = useRef<Socket | null>(null);
+    //const [ socket, setSocket ] = useState<Socket | null>(null);
+    const socketRef = useRef<Socket | null>(null);
     const [ message, setMessage ] = useState<string | File>('');
     const [ messages, setMessages ] = useState<messageType[]>([]);
     const [ teamName, setTeamName ] = useState<string>('');
@@ -30,44 +30,39 @@ function Chat(): ReactNode {
     const [peer, setPeer] = useState<RTCPeerConnection | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
     
-const startChat = useCallback(async (Team: string) => {
+
+    
+    const startChat = useCallback(async (Team: string) => {
         console.log('startChat:', Team);
-
-        // ניתוק והסרת האזנות מה-socket הישן
-        if (socket) {
-            socket.disconnect();
-        }
-
+        socketRef.current?.disconnect();
         // יצירת socket חדש
-        const newSocket = io(`${baseUrl}`, { withCredentials: true });
-        setSocket(newSocket);
-        console.log('1- socket:', socket?.id);
+        socketRef.current = io(`${baseUrl}`, { withCredentials: true });
         
-        newSocket.on('connect', () => {
+        socketRef.current?.on('connect', () => {
+            console.log('socket connected:', socketRef.current?.id);
             //console.log(`Connected to team room: ${Team}`);
-            newSocket.emit('joinRoom', Team);
-        });
-        // the socketIo server will call this function when a new message is received
-        // and it will update the messages state
-        newSocket.on('receiveMessage', ({ userName, message, dateSent, isFile }) => {
-            //console.log('receiveMessage');
-            setMessages((prevMessages) => [...prevMessages, { userName, message, dateSent, isFile }]);
+            socketRef.current?.emit('joinRoom', Team);
+            
+            // the socketIo server will call this function when a new message is received
+            // and it will update the messages state
+            socketRef.current?.on('receiveMessage', ({ userName, message, dateSent, isFile }) => {
+                //console.log('receiveMessage');
+                setMessages((prevMessages) => [...prevMessages, { userName, message, dateSent, isFile }]);
+            });
+
+            
         });
 
-        
 
         // ניקוי בעת סגירה
         return () => {
-            newSocket.off('receiveMessage');
-            newSocket.off('webrtc-offer');
-            newSocket.off('webrtc-answer');
-            newSocket.disconnect();
-            //peerConnection.close();
+            socketRef.current?.off('receiveMessage');
+            socketRef.current?.disconnect();
         };
     }, []);
 
 
-    console.log('2- socket:', socket?.id);
+    
     useEffect(() => {
         if (user) {
             axiosClient.get(`/api/teams/list-teams/${user?.userName}`)
@@ -88,57 +83,11 @@ const startChat = useCallback(async (Team: string) => {
     // start new code...
     const startSharing = useCallback(async ()=>{
         // Initialize peer connection
-        console.log('startSharing  called', socket);
-        if(socket){
-            console.log('1-shareScreenBtn:', teamName);
-            //shareScreen(socket, peerConnection, teamName);
-            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-            if (videoRef.current) videoRef.current.srcObject = stream;
-            const p = new RTCPeerConnection();
-            stream.getTracks().forEach(track => p.addTrack(track, stream));
+        console.log('startSharing  called', socketRef.current?.id);
+        if(socketRef.current){
             
-            p.onicecandidate = (e) => {
-                if (e.candidate) socket?.emit('ice-candidate', { roomId: teamName, candidate: e.candidate });
-            };
-
-            const offer = await p.createOffer();
-            await p.setLocalDescription(offer);
-            socket?.emit('offer', { roomId: teamName, offer });
-            setPeer(p);
         }
     },[]);
-
-    useEffect(()=>{
-        if (!socket) return;
-
-        socket.on('offer', async (offer) => {
-            const p = new RTCPeerConnection();
-            setPeer(p);
-
-            p.ontrack = (e) => {
-                if (videoRef.current) videoRef.current.srcObject = e.streams[0];
-            };
-            
-            p.onicecandidate = (e) => {
-                if (e.candidate) socket.emit('ice-candidate', { roomId: teamName, candidate: e.candidate });
-            };
-
-            await p.setRemoteDescription(new RTCSessionDescription(offer));
-            const answer = await p.createAnswer();
-            await p.setLocalDescription(answer);
-            socket.emit('answer', { roomId: teamName, answer });
-        });
-
-        socket.on('answer', async (answer) => {
-            if (peer) {
-                await peer.setRemoteDescription(new RTCSessionDescription(answer));
-            }
-        });
-        
-        socket.on('ice-candidate', async (candidate) => {
-            if (peer) await peer.addIceCandidate(new RTCIceCandidate(candidate));
-        });    
-    },[socket, teamName, peer]);
 
 
     
@@ -183,8 +132,8 @@ const startChat = useCallback(async (Team: string) => {
     },[fetchChatMessages, startChat, teamName]);
 
     const handleSendMessage = useCallback(() => {
-        if (socket && message) {
-            socket.emit('sendMessage', { 
+        if (socketRef.current && message) {
+            socketRef.current.emit('sendMessage', { 
                 message, 
                 teamName, 
                 userName: user?.userName,
@@ -194,18 +143,18 @@ const startChat = useCallback(async (Team: string) => {
             setMessage('');
             fetchChatMessages(teamName);
         }
-    }, [fetchChatMessages, message, socket, teamName, user?.userName]);
+    }, [fetchChatMessages, message, socketRef.current, teamName, user?.userName]);
 
     const uploadFile = useCallback(() => {
         Utils.uploadFile().then((file) => {
           const reader = new FileReader();
           reader.readAsDataURL(file);
           reader.onloadend = () => {
-            if (socket && reader.result) {
+            if (socketRef.current && reader.result) {
               const fileData = reader.result.toString(); // Ensure the result is a string
       
               // Ensure message.data is being set properly before emitting
-              socket.emit('sendMessage', {
+              socketRef.current.emit('sendMessage', {
                 message: {
                   name: file.name,
                   type: file.type,
@@ -218,7 +167,7 @@ const startChat = useCallback(async (Team: string) => {
           };
           fetchChatMessages(teamName);
         }).catch(() => {});
-      }, [fetchChatMessages, socket, teamName, user?.userName]);
+      }, [fetchChatMessages, socketRef.current, teamName, user?.userName]);
 
     const downloadFile = useCallback(async (element: React.MouseEvent<HTMLSpanElement, MouseEvent>)=>{
         const parentElement = element.currentTarget.parentElement?.parentElement as HTMLDivElement;
@@ -286,8 +235,6 @@ const startChat = useCallback(async (Team: string) => {
  
     return (
         <div className="chat-container"> 
-            {/*<video ref={videoRef}  autoPlay playsInline style={{backgroundColor:'red', width: '400px', maxHeight: '400px', border: '1px solid black' }}></video>
-            <video ref={remoteVideoRef}  autoPlay playsInline style={{backgroundColor:'black', width: '400px', maxHeight: '400px', border: '1px solid black' }}></video>*/}
             <div className="teams">
                 {teams.map((team, index) => (
                     <div className="team" key={index} onClick={(event) => getMessagesAndStartChat(event)}>
@@ -335,6 +282,7 @@ const startChat = useCallback(async (Team: string) => {
                     </div>
                 </div>
             </div>
+           
         </div>
     );
 }

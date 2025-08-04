@@ -20,8 +20,6 @@ export function initializeSocketIo(server: Server){
     // User joins a team chat room
     socket.on('joinRoom', (teamName: string) => {
       socket.join(teamName);
-      //socket.emit('current-sharer');
-      //console.log(`${socket.id} joined room: ${teamName}`);
     });
     
     // Listen for messages and broadcast them to the team chat room
@@ -76,24 +74,11 @@ export function initializeSocketIo(server: Server){
     });
     
     
-    /*socket.on('webrtc-offer', ({ offer, roomId }) => {
-      console.log('webrtc-offer',roomId);
-      socket.to(roomId).emit('webrtc-offer', { offer });
-    });*/
-    
-    /*socket.on('webrtc-answer', ({ answer, roomId }) => {
-      console.log('room:',roomId);
-      //console.log('webrtc-answer',answer);
-      socket.to(roomId).emit('webrtc-answer', { answer });
-    });*/
-
-    
-    
     
     // Notify the user when disconnected
     socket.on('disconnect', () => {
       socket.disconnect();
-      //console.log(`A user disconnected:`, socket.id);
+      console.log(`A user disconnected:`, socket.id);
     });
   });
 }
